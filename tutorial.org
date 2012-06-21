@@ -93,14 +93,15 @@ Blablabla, opis shaderów.
 
 * Emiter
 
-#+name SimpleEmitterObject
+#+name: SimpleEmitterObject
 #+begin_src javascript
   function Emitter() {
       //state
       this.pos = vec3.create([0, 0, 0]);
+      this.size = vec3.create([1.0, 1.0, 1.0]);
   
       this.startEnergy = 3.0;
-      this.startVelocity = 1.0;
+      this.startVelocity = vec3.create([1.0, 0.0, 0.0]);
   
       this.startColor = {r : 1.0, g : 1.0, b : 1.0, a : 1.0};
       this.endColor = {r : 1.0, g : 1.0, b : 1.0, a : 0.0};
@@ -108,6 +109,11 @@ Blablabla, opis shaderów.
       this.particles = [];
       this.maxParticles = 1000;
       this.liveParticles = 0;
+  
+      var ip;
+      for(ip = 0 ; ip < this.maxParticles ; ++ip) {
+          this.particles[ip] = new Particle();
+      }
   
       this.accumulator = 0.0;
       this.cooldown = 0.25;
@@ -131,7 +137,11 @@ Blablabla, opis shaderów.
           //update current particles
           for(i = 0 ; i < this.liveParticles ; ++i) {
               this.particles[i].energy -= time;
-              //TODO UPDATE PHYSICS
+  
+              var path = vec3.create([0, 0, 0]);
+              vec3.scale(this.particles[i].vel, time, path);
+              vec3.add(this.particles[i].pos, path);
+  
               if(this.particles[i].energy < 0) {
                   //swap dead with live particles;
                   var temp = this.particles[i];
@@ -162,7 +172,8 @@ Blablabla, opis shaderów.
           if(this.liveParticles < this.maxParticles) {
               var i = this.liveParticles;
               this.particles[i].pos = vec3.create(this.pos);
-              this.particles[i].vel = vec3.create([1, 1, 0]); //TODO randomize
+              this.particles[i].vel = vec3.create(this.startVelocity); //TODO randomize
+              this.particles[i].energy = this.startEnergy;
   //            this.particles[i].color =  FIXME how to copy color in JS?
               ++this.liveParticles;
               
@@ -174,6 +185,7 @@ Blablabla, opis shaderów.
           //translate to proper location
   
           mat4.translate(mvMatrix, particle.pos);
+          mat4.scale(mvMatrix, this.size);
   
           gl.uniform3f(shaderProgram.colorUniform, particle.color.r, particle.color.g, particle.color.b);
   
@@ -418,12 +430,13 @@ Blablabla, opis shaderów.
     <<WebGL-Texture-Init-Simple-Emitter>>
 
     <<SimpleParticleObject>>
-    <<SimpleParticleEmitter>>
+    <<SimpleEmitterObject>>
 
     <<WebGL-World-Init-Simple-Emitter>>
     <<WebGL-Init-Simple-Emitter>>
-
+    <<Update-World-Simple-Emitter>>
     <<WebGL-DrawScene-Simple-Emitter>>
+    <<WebGL-Animate-VariableStep>>
     <<WebGL-Tick-Simple-Emitter>>
   </script>
 #+end_src
@@ -435,7 +448,6 @@ Blablabla, opis shaderów.
         initGL(canvas);
         initShaders();
         initBuffers();
-        initTexture();
         initWorld();
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -451,6 +463,7 @@ Blablabla, opis shaderów.
     function initWorld() {
         testEmitter = new Emitter();
         testEmitter.pos = vec3.create([1, 1, -8]);
+        testEmitter.setTexture("data/star.gif");
     }
 #+end_src
 
@@ -458,6 +471,7 @@ Blablabla, opis shaderów.
 #+begin_src javascript
     function tick() {
         requestAnimFrame(tick);
+        animate();
         drawScene();
     }
 #+end_src
@@ -482,21 +496,18 @@ Blablabla, opis shaderów.
 
 #+end_src
 
+#+name: Update-World-Simple-Emitter
+#+begin_src javascript
+  function UpdateWorld(dt) {
+      testEmitter.update(dt);
+  }
+#+end_src
+
 
 To wszystko idzie do przerycia; stanie się elementem emitera.
 #+name: WebGL-Texture-Init-Simple-Emitter
 #+begin_src javascript
-    var particleTexture;
- 
-    function initTexture() {
-        particleTexture = gl.createTexture();
-        particleTexture.image = new Image();
-        particleTexture.image.onload = function () {
-            handleLoadedTexture(particleTexture)
-        }
- 
-        particleTexture.image.src = "data/star.gif";
-    }
+
 #+end_src
 
 
@@ -677,6 +688,21 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
         particleVertexTextureCoordBuffer.numItems = 4;
     }
  
+#+end_src
+
+#+name: WebGL-Animate-VariableStep
+#+begin_src javascript
+    var lastTime = 0;
+ 
+    function animate() {
+        var timeNow = new Date().getTime();
+        if (lastTime != 0) {
+            var elapsed = timeNow - lastTime;
+            UpdateWorld(elapsed/1000.0);
+        }
+        lastTime = timeNow;
+ 
+    }
 #+end_src
 
 
