@@ -187,36 +187,56 @@
           this.pos = vec3.create();
           this.vel = vec3.create();
           this.energy = 0.0;
-          this.draw = function() {
-              //stuff
-              gl.activeTexture(gl.TEXTURE0);
-              gl.bindTexture(gl.TEXTURE_2D, starTexture);
-              gl.uniform1i(shaderProgram.samplerUniform, 0);
-              
-              gl.bindBuffer(gl.ARRAY_BUFFER, starVertexTextureCoordBuffer);
-              gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, starVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-              
-              gl.bindBuffer(gl.ARRAY_BUFFER, starVertexPositionBuffer);
-              gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, starVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-              
-              setMatrixUniforms();
-              gl.drawArrays(gl.TRIANGLE_STRIP, 0, starVertexPositionBuffer.numItems);
-          };
+          this.color = {r : 1.0, g : 1.0, b : 1.0};
       }
       
+      
+      function drawParticle(particle) {
+      
+          mvPushMatrix();
+          //translate to proper location
+      
+          mat4.translate(mvMatrix, particle.pos);
+      
+          gl.uniform3f(shaderProgram.colorUniform, particle.color.r, particle.color.g, particle.color.b);
+      
+          //draw
+          gl.activeTexture(gl.TEXTURE0);
+          gl.bindTexture(gl.TEXTURE_2D, particleTexture);
+          gl.uniform1i(shaderProgram.samplerUniform, 0);
+          
+          gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexTextureCoordBuffer);
+          gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, particleVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+          
+          gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexPositionBuffer);
+          gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, particleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+          
+          setMatrixUniforms();
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, particleVertexPositionBuffer.numItems);
+      
+          mvPopMatrix();
+      }
+        
+      
     
+      var testParticle;
+      
+      function initWorld() {
+          testParticle = new Particle();
+          testParticle.pos = vec3.create([1, 1, -5]);
+      }
       function webGLStart() {
           var canvas = document.getElementById("webgl_canvas");
           initGL(canvas);
           initShaders();
           initBuffers();
           initTexture();
+          initWorld();
       
           gl.clearColor(0.0, 0.0, 0.0, 1.0);
        
           tick();
       }
-    
     
        
       function drawScene() {
@@ -230,6 +250,8 @@
       
           mat4.identity(mvMatrix);
           //tu kod rysujacy
+      
+          drawParticle(testParticle);
        }
       
       function tick() {

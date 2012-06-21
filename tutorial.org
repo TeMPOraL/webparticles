@@ -10,26 +10,44 @@ Using Org-Babel to write a tutorial :).
 
 #+name: SimpleParticleObject
 #+begin_src javascript
-  function Particle() {
-      this.pos = vec3.create();
-      this.vel = vec3.create();
-      this.energy = 0.0;
-      this.draw = function() {
-          //stuff
-          gl.activeTexture(gl.TEXTURE0);
-          gl.bindTexture(gl.TEXTURE_2D, particleTexture);
-          gl.uniform1i(shaderProgram.samplerUniform, 0);
-          
-          gl.bindBuffer(gl.ARRAY_BUFFER, starVertexTextureCoordBuffer);
-          gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, starVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
-          
-          gl.bindBuffer(gl.ARRAY_BUFFER, starVertexPositionBuffer);
-          gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, starVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-          
-          setMatrixUniforms();
-          gl.drawArrays(gl.TRIANGLE_STRIP, 0, starVertexPositionBuffer.numItems);
-      };
+    function Particle() {
+        this.pos = vec3.create();
+        this.vel = vec3.create();
+        this.energy = 0.0;
+        this.color = {r : 1.0, g : 1.0, b : 1.0};
+    }
+
+#+end_src
+
+#+name: SimpleParticleDrawing
+#+begin_src javascript
+
+  function drawParticle(particle) {
+  
+      mvPushMatrix();
+      //translate to proper location
+
+      mat4.translate(mvMatrix, particle.pos);
+
+      gl.uniform3f(shaderProgram.colorUniform, particle.color.r, particle.color.g, particle.color.b);
+
+      //draw
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, particleTexture);
+      gl.uniform1i(shaderProgram.samplerUniform, 0);
+      
+      gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexTextureCoordBuffer);
+      gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, particleVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+      
+      gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexPositionBuffer);
+      gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, particleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+      
+      setMatrixUniforms();
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, particleVertexPositionBuffer.numItems);
+
+      mvPopMatrix();
   }
+    
   
 #+end_src
 
@@ -174,9 +192,10 @@ Blablabla, opis shaderów.
     <<WebGL-Texture-Init-Simple-Particle>>
 
     <<SimpleParticleObject>>
+    <<SimpleParticleDrawing>>
 
+    <<WebGL-World-Init-Simple-Particle>>
     <<WebGL-Init-Simple-Particle>>
-
 
     <<WebGL-DrawScene-Simple-Particle>>
     <<WebGL-Tick-Simple-Particle>>
@@ -196,10 +215,21 @@ Blablabla, opis shaderów.
         initShaders();
         initBuffers();
         initTexture();
+        initWorld();
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
  
         tick();
+    }
+#+end_src
+
+#+name: WebGL-World-Init-Simple-Particle
+#+begin_src javascript
+    var testParticle;
+    
+    function initWorld() {
+        testParticle = new Particle();
+        testParticle.pos = vec3.create([1, 1, -5]);
     }
 #+end_src
 
@@ -225,6 +255,8 @@ Blablabla, opis shaderów.
 
         mat4.identity(mvMatrix);
         //tu kod rysujacy
+
+        drawParticle(testParticle);
      }
 
 #+end_src
@@ -244,6 +276,125 @@ Blablabla, opis shaderów.
         particleTexture.image.src = "data/star.gif";
     }
 #+end_src
+
+
+** Simple emitter
+
+#+name: Example - simple emitter
+#+begin_src html :tangle simple-emitter.html :noweb tangle
+  <html>
+    <head>
+      <title>Emiter cząstek</title>
+      <<JSIncludes>>
+      <<FragmentShader>>
+      <<VertexShader>>
+
+      <<WebGL-Simple-Emitter>>
+    </head>
+    <body onload="webGLStart();">
+      <<Canvas>>
+    </body>
+  </html>
+  
+#+end_src
+
+*** Substructure
+
+#+name: WebGL-Simple-Emitter
+#+begin_src html
+  <script type="text/javascript">
+    <<WebGL-Matrix-Code>>
+    <<WebGL-Canvas-Init>>
+    <<WebGL-Shaders-Init>>
+    <<WebGL-Buffers-Init>>
+    <<WebGL-Textures-Load>>
+    <<WebGL-Texture-Init-Simple-Emitter>>
+
+    <<SimpleParticleObject>>
+    <<SimpleParticleEmitter>>
+
+    <<WebGL-World-Init-Simple-Emitter>>
+    <<WebGL-Init-Simple-Emitter>>
+
+    <<WebGL-DrawScene-Simple-Emitter>>
+    <<WebGL-Tick-Simple-Emitter>>
+  </script>
+#+end_src
+
+#+name: WebGL-Init-Simple-Emitter
+#+begin_src javascript
+    function webGLStart() {
+        var canvas = document.getElementById("webgl_canvas");
+        initGL(canvas);
+        initShaders();
+        initBuffers();
+        initTexture();
+        initWorld();
+
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+ 
+        tick();
+    }
+#+end_src
+
+#+name: WebGL-World-Init-Simple-Particle
+#+begin_src javascript
+    var testParticle;
+    
+    function initWorld() {
+        testParticle = new Particle();
+        testParticle.pos = vec3.create([1, 1, -5]);
+    }
+#+end_src
+
+#+name: WebGL-Tick-Simple-Particle
+#+begin_src javascript
+    function tick() {
+        requestAnimFrame(tick);
+        drawScene();
+    }
+#+end_src
+
+#+name: WebGL-DrawScene-Simple-Particle
+#+begin_src javascript
+ 
+    function drawScene() {
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+ 
+        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+ 
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+        gl.enable(gl.BLEND);
+
+        mat4.identity(mvMatrix);
+        //tu kod rysujacy
+
+        drawParticle(testParticle);
+     }
+
+#+end_src
+
+
+#+name: WebGL-Texture-Init-Simple-Particle
+#+begin_src javascript
+    var particleTexture;
+ 
+    function initTexture() {
+        particleTexture = gl.createTexture();
+        particleTexture.image = new Image();
+        particleTexture.image.onload = function () {
+            handleLoadedTexture(particleTexture)
+        }
+ 
+        particleTexture.image.src = "data/star.gif";
+    }
+#+end_src
+
+
+
+      < <SimpleParticleObject> >
+      < <SimpleEmitterObject> >
 
 * /b/
 
@@ -428,7 +579,8 @@ Blablabla, opis shaderów.
    
 * TO DO
 ** DONE Empty canvas
-** TODO Particle code + display
+** DONE Particle code + display
+*** TODO Press a button/link to change particle color ;).
 ** TODO Particle emitter code + display
    - demo a simple (magic) explosion
 ** TODO Improved emitter (physics) + display

@@ -1,0 +1,41 @@
+
+<html>
+  <head>
+    <title>Emiter cz±stek</title>
+    <script type="text/javascript" src="js/gl-matrix-min.js"></script>
+    <script type="text/javascript" src="js/webgl-utils.js"></script>
+    <script id="shader-fs" type="x-shader/x-fragment">
+        precision mediump float;
+     
+        varying vec2 vTextureCoord;
+     
+        uniform sampler2D uSampler;
+     
+        uniform vec3 uColor;
+     
+        void main(void) {
+            vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+            gl_FragColor = textureColor * vec4(uColor, 1.0);
+        }
+    </script>
+    <script id="shader-vs" type="x-shader/x-vertex">
+        attribute vec3 aVertexPosition;
+        attribute vec2 aTextureCoord;
+     
+        uniform mat4 uMVMatrix;
+        uniform mat4 uPMatrix;
+     
+        varying vec2 vTextureCoord;
+     
+        void main(void) {
+            gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+            vTextureCoord = aTextureCoord;
+        }
+    </script>
+
+    
+  </head>
+  <body onload="webGLStart();">
+    <canvas id="webgl_canvas" style="border: none;" width="640" height="480"></canvas>
+  </body>
+</html>
