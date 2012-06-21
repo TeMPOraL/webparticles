@@ -1,6 +1,7 @@
 
 <html>
   <head>
+    <title>Pojedyncza cz±steczka</title>
     <script type="text/javascript" src="js/gl-matrix-min.js"></script>
     <script type="text/javascript" src="js/webgl-utils.js"></script>
     <script id="shader-fs" type="x-shader/x-fragment">
@@ -32,6 +33,29 @@
         }
     </script>
     <script type="text/javascript">
+      var mvMatrix = mat4.create();
+      var mvMatrixStack = [];
+      var pMatrix = mat4.create();
+       
+      function mvPushMatrix() {
+          var copy = mat4.create();
+          mat4.set(mvMatrix, copy);
+          mvMatrixStack.push(copy);
+      }
+       
+      function mvPopMatrix() {
+          if (mvMatrixStack.length == 0) {
+              throw "Invalid popMatrix!";
+          }
+          mvMatrix = mvMatrixStack.pop();
+      }
+       
+       
+      function setMatrixUniforms() {
+          gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
+          gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+      }
+      
       function initGL(canvas) {
           try {
               gl = canvas.getContext("experimental-webgl");
@@ -43,7 +67,70 @@
               alert("Could not initialise WebGL, sorry :-(");
           }
       }
+       
+      function getShader(gl, id) {
+          var shaderScript = document.getElementById(id);
+          if (!shaderScript) {
+              return null;
+          }
+       
+          var str = "";
+          var k = shaderScript.firstChild;
+          while (k) {
+              if (k.nodeType == 3) {
+                  str += k.textContent;
+              }
+              k = k.nextSibling;
+          }
+       
+          var shader;
+          if (shaderScript.type == "x-shader/x-fragment") {
+              shader = gl.createShader(gl.FRAGMENT_SHADER);
+          } else if (shaderScript.type == "x-shader/x-vertex") {
+              shader = gl.createShader(gl.VERTEX_SHADER);
+          } else {
+              return null;
+          }
+       
+          gl.shaderSource(shader, str);
+          gl.compileShader(shader);
+       
+          if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+              alert(gl.getShaderInfoLog(shader));
+              return null;
+          }
+       
+          return shader;
+      }
       
+      var shaderProgram;
+       
+      function initShaders() {
+          var fragmentShader = getShader(gl, "shader-fs");
+          var vertexShader = getShader(gl, "shader-vs");
+       
+          shaderProgram = gl.createProgram();
+          gl.attachShader(shaderProgram, vertexShader);
+          gl.attachShader(shaderProgram, fragmentShader);
+          gl.linkProgram(shaderProgram);
+       
+          if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+              alert("Could not initialise shaders");
+          }
+       
+          gl.useProgram(shaderProgram);
+       
+          shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+          gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+       
+          shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
+          gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+       
+          shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+          shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+          shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+          shaderProgram.colorUniform = gl.getUniformLocation(shaderProgram, "uColor");
+      }
       
       var particleVertexPositionBuffer;
       var particleVertexTextureCoordBuffer;
@@ -74,21 +161,81 @@
           particleVertexTextureCoordBuffer.numItems = 4;
       }
        
-          function webGLStart() {
-              var canvas = document.getElementById("webgl_canvas");
-              initGL(canvas);
-              initShaders();
-      //        initBuffers();
-      //        initTexture();
-      //        initWorldObjects();
+      function handleLoadedTexture(texture) {
+          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+          gl.bindTexture(gl.TEXTURE_2D, texture);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
        
-              gl.clearColor(0.0, 0.0, 0.0, 1.0);
+          gl.bindTexture(gl.TEXTURE_2D, null);
+      }
+      
+      var particleTexture;
        
-      //        document.onkeydown = handleKeyDown;
-      //        document.onkeyup = handleKeyUp;
-       
-              tick();
+      function initTexture() {
+          particleTexture = gl.createTexture();
+          particleTexture.image = new Image();
+          particleTexture.image.onload = function () {
+              handleLoadedTexture(particleTexture)
           }
+       
+          particleTexture.image.src = "data/star.gif";
+      }
+    
+      function Particle() {
+          this.pos = vec3.create();
+          this.vel = vec3.create();
+          this.energy = 0.0;
+          this.draw = function() {
+              //stuff
+              gl.activeTexture(gl.TEXTURE0);
+              gl.bindTexture(gl.TEXTURE_2D, starTexture);
+              gl.uniform1i(shaderProgram.samplerUniform, 0);
+              
+              gl.bindBuffer(gl.ARRAY_BUFFER, starVertexTextureCoordBuffer);
+              gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, starVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+              
+              gl.bindBuffer(gl.ARRAY_BUFFER, starVertexPositionBuffer);
+              gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, starVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+              
+              setMatrixUniforms();
+              gl.drawArrays(gl.TRIANGLE_STRIP, 0, starVertexPositionBuffer.numItems);
+          };
+      }
+      
+    
+      function webGLStart() {
+          var canvas = document.getElementById("webgl_canvas");
+          initGL(canvas);
+          initShaders();
+          initBuffers();
+          initTexture();
+      
+          gl.clearColor(0.0, 0.0, 0.0, 1.0);
+       
+          tick();
+      }
+    
+    
+       
+      function drawScene() {
+          gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+       
+          mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+       
+          gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+          gl.enable(gl.BLEND);
+      
+          mat4.identity(mvMatrix);
+          //tu kod rysujacy
+       }
+      
+      function tick() {
+          requestAnimFrame(tick);
+          drawScene();
+      }
     </script>
   </head>
   <body onload="webGLStart();">

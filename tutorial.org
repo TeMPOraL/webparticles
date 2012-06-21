@@ -3,7 +3,37 @@
 
 Using Org-Babel to write a tutorial :).
 
+
+* WebGL - szkielet
+
 * Cząsteczki
+
+#+name: SimpleParticleObject
+#+begin_src javascript
+  function Particle() {
+      this.pos = vec3.create();
+      this.vel = vec3.create();
+      this.energy = 0.0;
+      this.draw = function() {
+          //stuff
+          gl.activeTexture(gl.TEXTURE0);
+          gl.bindTexture(gl.TEXTURE_2D, particleTexture);
+          gl.uniform1i(shaderProgram.samplerUniform, 0);
+          
+          gl.bindBuffer(gl.ARRAY_BUFFER, starVertexTextureCoordBuffer);
+          gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, starVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+          
+          gl.bindBuffer(gl.ARRAY_BUFFER, starVertexPositionBuffer);
+          gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, starVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+          
+          setMatrixUniforms();
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, starVertexPositionBuffer.numItems);
+      };
+  }
+  
+#+end_src
+
+Blablabla, opis shaderów.
 
 #+name: FragmentShader
 #+begin_src html
@@ -49,6 +79,7 @@ Using Org-Babel to write a tutorial :).
 #+begin_src html :tangle skeleton.html :noweb tangle
   <html>
     <head>
+      <title>Szkielet - WebGL</title>
       <<JSIncludes>>
       <<WebGL-Skeleton>>
     </head>
@@ -57,7 +88,7 @@ Using Org-Babel to write a tutorial :).
     </body>
   </html>
 #+end_src
-
+*** Substructure
 #+name: WebGL-Skeleton
 #+begin_src html
   <script type="text/javascript">
@@ -117,10 +148,11 @@ Using Org-Babel to write a tutorial :).
 #+begin_src html :tangle simple-particle.html :noweb tangle
   <html>
     <head>
+      <title>Pojedyncza cząsteczka</title>
       <<JSIncludes>>
       <<FragmentShader>>
       <<VertexShader>>
-      <<WebGL-simple-particle>>
+      <<WebGL-Simple-Particle>>
     </head>
     <body onload="webGLStart();">
       <<Canvas>>
@@ -129,17 +161,96 @@ Using Org-Babel to write a tutorial :).
   
 #+end_src
 
-#+name: WebGL-simple-particle
+*** Substructure
+
+#+name: WebGL-Simple-Particle
 #+begin_src html
   <script type="text/javascript">
+    <<WebGL-Matrix-Code>>
     <<WebGL-Canvas-Init>>
     <<WebGL-Shaders-Init>>
     <<WebGL-Buffers-Init>>
-    <<WebGL-Init>>
+    <<WebGL-Textures-Load>>
+    <<WebGL-Texture-Init-Simple-Particle>>
+
+    <<SimpleParticleObject>>
+
+    <<WebGL-Init-Simple-Particle>>
+
+
+    <<WebGL-DrawScene-Simple-Particle>>
+    <<WebGL-Tick-Simple-Particle>>
   </script>
 #+end_src
 
+#+name: WebGL-Matrices-Simple-Particle
+#+begin_src javascript
+    var pMatrix = mat4.create();
+#+end_src
+
+#+name: WebGL-Init-Simple-Particle
+#+begin_src javascript
+    function webGLStart() {
+        var canvas = document.getElementById("webgl_canvas");
+        initGL(canvas);
+        initShaders();
+        initBuffers();
+        initTexture();
+
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+ 
+        tick();
+    }
+#+end_src
+
+#+name: WebGL-Tick-Simple-Particle
+#+begin_src javascript
+    function tick() {
+        requestAnimFrame(tick);
+        drawScene();
+    }
+#+end_src
+
+#+name: WebGL-DrawScene-Simple-Particle
+#+begin_src javascript
+ 
+    function drawScene() {
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+ 
+        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+ 
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+        gl.enable(gl.BLEND);
+
+        mat4.identity(mvMatrix);
+        //tu kod rysujacy
+     }
+
+#+end_src
+
+
+#+name: WebGL-Texture-Init-Simple-Particle
+#+begin_src javascript
+    var particleTexture;
+ 
+    function initTexture() {
+        particleTexture = gl.createTexture();
+        particleTexture.image = new Image();
+        particleTexture.image.onload = function () {
+            handleLoadedTexture(particleTexture)
+        }
+ 
+        particleTexture.image.src = "data/star.gif";
+    }
+#+end_src
+
 * /b/
+
+** Links to use in the tutorial
+*** http://nehe.gamedev.net/tutorial/particle_engine_using_triangle_strips/21001/
+*** http://webgl-tuts.webninja.eu/#tutorials-tutorial10- (!!??!)
+*** http://learningwebgl.com/blog/?p=1008
 ** Unassigned code
 #+name: JSIncludes
 #+begin_src html
@@ -152,24 +263,7 @@ Using Org-Babel to write a tutorial :).
   <canvas id="webgl_canvas" style="border: none;" width="640" height="480"></canvas>
 #+end_src
 
-#+name: WebGL-Init
-#+begin_src javascript
-    function webGLStart() {
-        var canvas = document.getElementById("webgl_canvas");
-        initGL(canvas);
-        initShaders();
-//        initBuffers();
-//        initTexture();
-//        initWorldObjects();
- 
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
- 
-//        document.onkeydown = handleKeyDown;
-//        document.onkeyup = handleKeyUp;
- 
-        tick();
-    }
-#+end_src
+
 
 #+name: WebGL-Canvas-Init
 #+begin_src javascript
@@ -188,8 +282,114 @@ Using Org-Babel to write a tutorial :).
 
 #+name: WebGL-Shaders-Init
 #+begin_src javascript
+ 
+    function getShader(gl, id) {
+        var shaderScript = document.getElementById(id);
+        if (!shaderScript) {
+            return null;
+        }
+ 
+        var str = "";
+        var k = shaderScript.firstChild;
+        while (k) {
+            if (k.nodeType == 3) {
+                str += k.textContent;
+            }
+            k = k.nextSibling;
+        }
+ 
+        var shader;
+        if (shaderScript.type == "x-shader/x-fragment") {
+            shader = gl.createShader(gl.FRAGMENT_SHADER);
+        } else if (shaderScript.type == "x-shader/x-vertex") {
+            shader = gl.createShader(gl.VERTEX_SHADER);
+        } else {
+            return null;
+        }
+ 
+        gl.shaderSource(shader, str);
+        gl.compileShader(shader);
+ 
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            alert(gl.getShaderInfoLog(shader));
+            return null;
+        }
+ 
+        return shader;
+    }
+
+    var shaderProgram;
+ 
+    function initShaders() {
+        var fragmentShader = getShader(gl, "shader-fs");
+        var vertexShader = getShader(gl, "shader-vs");
+ 
+        shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+ 
+        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+            alert("Could not initialise shaders");
+        }
+ 
+        gl.useProgram(shaderProgram);
+ 
+        shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+        gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+ 
+        shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
+        gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+ 
+        shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+        shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+        shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+        shaderProgram.colorUniform = gl.getUniformLocation(shaderProgram, "uColor");
+    }
 
 #+end_src
+
+#+name: WebGL-Matrix-Code
+#+begin_src javascript
+    var mvMatrix = mat4.create();
+    var mvMatrixStack = [];
+    var pMatrix = mat4.create();
+ 
+    function mvPushMatrix() {
+        var copy = mat4.create();
+        mat4.set(mvMatrix, copy);
+        mvMatrixStack.push(copy);
+    }
+ 
+    function mvPopMatrix() {
+        if (mvMatrixStack.length == 0) {
+            throw "Invalid popMatrix!";
+        }
+        mvMatrix = mvMatrixStack.pop();
+    }
+ 
+ 
+    function setMatrixUniforms() {
+        gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
+        gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+    }
+
+#+end_src
+
+#+name: WebGL-Textures-Load
+#+begin_src javascript
+    function handleLoadedTexture(texture) {
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+ 
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+
+#+end_src
+
 
 #+name: WebGL-Buffers-Init
 #+begin_src javascript
@@ -225,9 +425,9 @@ Using Org-Babel to write a tutorial :).
 #+end_src
 
 
-
+   
 * TO DO
-** TODO Empty canvas
+** DONE Empty canvas
 ** TODO Particle code + display
 ** TODO Particle emitter code + display
    - demo a simple (magic) explosion
