@@ -1,0 +1,22 @@
+#+title: Systemy cz±steczkowe w WebGL - tutorial
+#+startup: hidestars
+
+Using Org-Babel to write a tutorial :).
+
+
+
+
+
+
+* TO DO
+** TODO Empty canvas
+** TODO Particle code + display
+** TODO Particle emitter code + display
+   - demo a simple (magic) explosion
+** TODO Improved emitter (physics) + display
+   - demo snowe
+   - demo smoke
+   - demo jet
+** TODO Bonus
+   - particles that follow path
+   - demo <3 :).
