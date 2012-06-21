@@ -1,4 +1,4 @@
-#+title: Systemy cz±steczkowe w WebGL - tutorial
+#+title: Systemy czÄ…steczkowe w WebGL - tutorial
 #+startup: hidestars
 
 Using Org-Babel to write a tutorial :).
