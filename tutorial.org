@@ -91,6 +91,113 @@ Blablabla, opis shaderów.
 
 
 
+* Emiter
+
+#+name SimpleEmitterObject
+#+begin_src javascript
+  function Emitter() {
+      //state
+      this.pos = vec3.create([0, 0, 0]);
+  
+      this.startEnergy = 3.0;
+      this.startVelocity = 1.0;
+  
+      this.startColor = {r : 1.0, g : 1.0, b : 1.0, a : 1.0};
+      this.endColor = {r : 1.0, g : 1.0, b : 1.0, a : 0.0};
+  
+      this.particles = [];
+      this.maxParticles = 1000;
+      this.liveParticles = 0;
+  
+      this.accumulator = 0.0;
+      this.cooldown = 0.25;
+  
+      this.texture = null;
+  
+      //functions
+      this.setTexture = function(name) {
+          this.texture = gl.createTexture();
+          this.texture.image = new Image();
+          var fj = this; //hacking around callbacks
+          this.texture.image.onload = function () {
+              handleLoadedTexture(fj.texture)
+          }
+          
+          this.texture.image.src = name;
+      };
+  
+      this.update = function(time) {
+          var i;
+          //update current particles
+          for(i = 0 ; i < this.liveParticles ; ++i) {
+              this.particles[i].energy -= time;
+              //TODO UPDATE PHYSICS
+              if(this.particles[i].energy < 0) {
+                  //swap dead with live particles;
+                  var temp = this.particles[i];
+                  this.particles[i] = this.particles[this.liveParticles-1];
+                  this.particles[this.liveParticles - 1] = temp;
+                  --this.liveParticles;
+              }
+          }
+  
+          //spawn new particles
+          this.accumulator += time;
+          while(this.accumulator > this.cooldown) {
+              this.accumulator -= this.cooldown;
+              this.emitParticle();
+          }
+  
+      };
+  
+      this.draw = function() {
+          var i;
+          for(i = 0 ; i < this.liveParticles ; ++i) {
+              this.drawParticle(this.particles[i]);
+          }
+      };
+  
+      //worker functions
+      this.emitParticle = function() {
+          if(this.liveParticles < this.maxParticles) {
+              var i = this.liveParticles;
+              this.particles[i].pos = vec3.create(this.pos);
+              this.particles[i].vel = vec3.create([1, 1, 0]); //TODO randomize
+  //            this.particles[i].color =  FIXME how to copy color in JS?
+              ++this.liveParticles;
+              
+          }
+      };
+  
+      this.drawParticle = function(particle) {
+          mvPushMatrix();
+          //translate to proper location
+  
+          mat4.translate(mvMatrix, particle.pos);
+  
+          gl.uniform3f(shaderProgram.colorUniform, particle.color.r, particle.color.g, particle.color.b);
+  
+          //draw
+          gl.activeTexture(gl.TEXTURE0);
+          gl.bindTexture(gl.TEXTURE_2D, this.texture);
+          gl.uniform1i(shaderProgram.samplerUniform, 0);
+          
+          gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexTextureCoordBuffer);
+          gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, particleVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+          
+          gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexPositionBuffer);
+          gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, particleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+          
+          setMatrixUniforms();
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, particleVertexPositionBuffer.numItems);
+  
+          mvPopMatrix();
+      };
+  
+  };
+  
+#+end_src
+
 * Tangled files   
 ** Skeleton
 #+name: Skeleton
@@ -337,17 +444,17 @@ Blablabla, opis shaderów.
     }
 #+end_src
 
-#+name: WebGL-World-Init-Simple-Particle
+#+name: WebGL-World-Init-Simple-Emitter
 #+begin_src javascript
-    var testParticle;
+    var testEmitter;
     
     function initWorld() {
-        testParticle = new Particle();
-        testParticle.pos = vec3.create([1, 1, -5]);
+        testEmitter = new Emitter();
+        testEmitter.pos = vec3.create([1, 1, -8]);
     }
 #+end_src
 
-#+name: WebGL-Tick-Simple-Particle
+#+name: WebGL-Tick-Simple-Emitter
 #+begin_src javascript
     function tick() {
         requestAnimFrame(tick);
@@ -355,7 +462,7 @@ Blablabla, opis shaderów.
     }
 #+end_src
 
-#+name: WebGL-DrawScene-Simple-Particle
+#+name: WebGL-DrawScene-Simple-Emitter
 #+begin_src javascript
  
     function drawScene() {
@@ -370,13 +477,14 @@ Blablabla, opis shaderów.
         mat4.identity(mvMatrix);
         //tu kod rysujacy
 
-        drawParticle(testParticle);
+        testEmitter.draw();
      }
 
 #+end_src
 
 
-#+name: WebGL-Texture-Init-Simple-Particle
+To wszystko idzie do przerycia; stanie się elementem emitera.
+#+name: WebGL-Texture-Init-Simple-Emitter
 #+begin_src javascript
     var particleTexture;
  
@@ -391,10 +499,6 @@ Blablabla, opis shaderów.
     }
 #+end_src
 
-
-
-      < <SimpleParticleObject> >
-      < <SimpleEmitterObject> >
 
 * /b/
 
