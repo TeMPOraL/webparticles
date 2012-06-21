@@ -188,7 +188,7 @@
           this.size = vec3.create([1.0, 1.0, 1.0]);
       
           this.startEnergy = 3.0;
-          this.startVelocity = vec3.create([1.0, 0.0, 0.0]);
+          this.startSpeed = 2.0;
       
           this.startColor = {r : 1.0, g : 1.0, b : 1.0, a : 1.0};
           this.endColor = {r : 1.0, g : 1.0, b : 1.0, a : 0.0};
@@ -196,6 +196,8 @@
           this.particles = [];
           this.maxParticles = 1000;
           this.liveParticles = 0;
+      
+          this.particlesPerFrame = 10;
       
           var ip;
           for(ip = 0 ; ip < this.maxParticles ; ++ip) {
@@ -242,7 +244,9 @@
               this.accumulator += time;
               while(this.accumulator > this.cooldown) {
                   this.accumulator -= this.cooldown;
-                  this.emitParticle();
+                  for(i = 0 ; i < this.particlesPerFrame ; ++i) {
+                      this.emitParticle();
+                  }
               }
       
           };
@@ -259,7 +263,9 @@
               if(this.liveParticles < this.maxParticles) {
                   var i = this.liveParticles;
                   this.particles[i].pos = vec3.create(this.pos);
-                  this.particles[i].vel = vec3.create(this.startVelocity); //TODO randomize
+                  this.particles[i].vel = vec3.create([Math.random()-0.5, Math.random()-0.5, 0]); //TODO randomize
+                  vec3.normalize(this.particles[i].vel);
+                  vec3.scale(this.particles[i].vel, this.startSpeed);
                   this.particles[i].energy = this.startEnergy;
       //            this.particles[i].color =  FIXME how to copy color in JS?
                   ++this.liveParticles;
@@ -297,12 +303,24 @@
       
     
       var testEmitter;
+      var testEmitter2;
       
       function initWorld() {
           testEmitter = new Emitter();
           testEmitter.pos = vec3.create([1, 1, -8]);
+          testEmitter.size = vec3.create([0.5, 0.5, 1.0]);
           testEmitter.setTexture("data/star.gif");
+      
+      
+          testEmitter2 = new Emitter();
+          testEmitter2.pos = vec3.create([-1, -1, -9]);
+          testEmitter2.size = vec3.create([0.25, 0.25, 1.0]);
+          testEmitter2.startEnergy = 5.0;
+          testEmitter2.cooldown = 1.0;
+          testEmitter2.startVelocity = vec3.create([1.0, 1.0, 0.0]);
+          testEmitter2.setTexture("data/flower.png");
       }
+      
       function webGLStart() {
           var canvas = document.getElementById("webgl_canvas");
           initGL(canvas);
@@ -316,6 +334,7 @@
       }
       function UpdateWorld(dt) {
           testEmitter.update(dt);
+          testEmitter2.update(dt);
       }
        
       function drawScene() {
@@ -331,19 +350,30 @@
           //tu kod rysujacy
       
           testEmitter.draw();
+          testEmitter2.draw();
        }
       
       var lastTime = 0;
+      var dtAccum = 0;
+      var updateCooldown = 1/30.0; //30FPS
        
       function animate() {
           var timeNow = new Date().getTime();
           if (lastTime != 0) {
-              var elapsed = timeNow - lastTime;
-              UpdateWorld(elapsed/1000.0);
+              var elapsed = (timeNow - lastTime)/1000.0;
+              dtAccum += elapsed;
+              if(dtAccum > 1.0) {
+                  dtAccum = 1.0;
+              }
+              while(dtAccum > updateCooldown) {
+                  UpdateWorld(updateCooldown);
+                  dtAccum -= updateCooldown;
+              }
           }
           lastTime = timeNow;
        
       }
+      
       function tick() {
           requestAnimFrame(tick);
           animate();

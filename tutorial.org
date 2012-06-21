@@ -101,7 +101,7 @@ Blablabla, opis shaderów.
       this.size = vec3.create([1.0, 1.0, 1.0]);
   
       this.startEnergy = 3.0;
-      this.startVelocity = vec3.create([1.0, 0.0, 0.0]);
+      this.startSpeed = 2.0;
   
       this.startColor = {r : 1.0, g : 1.0, b : 1.0, a : 1.0};
       this.endColor = {r : 1.0, g : 1.0, b : 1.0, a : 0.0};
@@ -109,6 +109,8 @@ Blablabla, opis shaderów.
       this.particles = [];
       this.maxParticles = 1000;
       this.liveParticles = 0;
+  
+      this.particlesPerFrame = 10;
   
       var ip;
       for(ip = 0 ; ip < this.maxParticles ; ++ip) {
@@ -155,7 +157,9 @@ Blablabla, opis shaderów.
           this.accumulator += time;
           while(this.accumulator > this.cooldown) {
               this.accumulator -= this.cooldown;
-              this.emitParticle();
+              for(i = 0 ; i < this.particlesPerFrame ; ++i) {
+                  this.emitParticle();
+              }
           }
   
       };
@@ -172,7 +176,9 @@ Blablabla, opis shaderów.
           if(this.liveParticles < this.maxParticles) {
               var i = this.liveParticles;
               this.particles[i].pos = vec3.create(this.pos);
-              this.particles[i].vel = vec3.create(this.startVelocity); //TODO randomize
+              this.particles[i].vel = vec3.create([Math.random()-0.5, Math.random()-0.5, 0]); //TODO randomize
+              vec3.normalize(this.particles[i].vel);
+              vec3.scale(this.particles[i].vel, this.startSpeed);
               this.particles[i].energy = this.startEnergy;
   //            this.particles[i].color =  FIXME how to copy color in JS?
               ++this.liveParticles;
@@ -458,13 +464,25 @@ Blablabla, opis shaderów.
 
 #+name: WebGL-World-Init-Simple-Emitter
 #+begin_src javascript
-    var testEmitter;
-    
-    function initWorld() {
-        testEmitter = new Emitter();
-        testEmitter.pos = vec3.create([1, 1, -8]);
-        testEmitter.setTexture("data/star.gif");
-    }
+  var testEmitter;
+  var testEmitter2;
+  
+  function initWorld() {
+      testEmitter = new Emitter();
+      testEmitter.pos = vec3.create([1, 1, -8]);
+      testEmitter.size = vec3.create([0.5, 0.5, 1.0]);
+      testEmitter.setTexture("data/star.gif");
+  
+  
+      testEmitter2 = new Emitter();
+      testEmitter2.pos = vec3.create([-1, -1, -9]);
+      testEmitter2.size = vec3.create([0.25, 0.25, 1.0]);
+      testEmitter2.startEnergy = 5.0;
+      testEmitter2.cooldown = 1.0;
+      testEmitter2.startVelocity = vec3.create([1.0, 1.0, 0.0]);
+      testEmitter2.setTexture("data/flower.png");
+  }
+  
 #+end_src
 
 #+name: WebGL-Tick-Simple-Emitter
@@ -492,6 +510,7 @@ Blablabla, opis shaderów.
         //tu kod rysujacy
 
         testEmitter.draw();
+        testEmitter2.draw();
      }
 
 #+end_src
@@ -500,6 +519,7 @@ Blablabla, opis shaderów.
 #+begin_src javascript
   function UpdateWorld(dt) {
       testEmitter.update(dt);
+      testEmitter2.update(dt);
   }
 #+end_src
 
@@ -692,17 +712,27 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
 
 #+name: WebGL-Animate-VariableStep
 #+begin_src javascript
-    var lastTime = 0;
- 
-    function animate() {
-        var timeNow = new Date().getTime();
-        if (lastTime != 0) {
-            var elapsed = timeNow - lastTime;
-            UpdateWorld(elapsed/1000.0);
-        }
-        lastTime = timeNow;
- 
-    }
+  var lastTime = 0;
+  var dtAccum = 0;
+  var updateCooldown = 1/30.0; //30FPS
+   
+  function animate() {
+      var timeNow = new Date().getTime();
+      if (lastTime != 0) {
+          var elapsed = (timeNow - lastTime)/1000.0;
+          dtAccum += elapsed;
+          if(dtAccum > 1.0) {
+              dtAccum = 1.0;
+          }
+          while(dtAccum > updateCooldown) {
+              UpdateWorld(updateCooldown);
+              dtAccum -= updateCooldown;
+          }
+      }
+      lastTime = timeNow;
+   
+  }
+  
 #+end_src
 
 
@@ -711,7 +741,7 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
 ** DONE Empty canvas
 ** DONE Particle code + display
 *** TODO Press a button/link to change particle color ;).
-** TODO Particle emitter code + display
+** DONE Particle emitter code + display
    - demo a simple (magic) explosion
 ** TODO Improved emitter (physics) + display
    - demo snowe
