@@ -3,16 +3,6 @@
 
 Using Org-Babel to write a tutorial :).
 
-
-
-* WebGL
-#+name: JSIncludes
-#+begin_src html
-  <script type="text/javascript" src="js/gl-matrix-min.js"></script>
-  <script type="text/javascript" src="js/webgl-utils.js"></script>
-#+end_src
-
-
 * Cząsteczki
 
 #+name: FragmentShader
@@ -52,8 +42,75 @@ Using Org-Babel to write a tutorial :).
 #+end_src
 
 
+
 * Tangled files   
 ** Skeleton
+#+name: Skeleton
+#+begin_src html :tangle skeleton.html :noweb tangle
+  <html>
+    <head>
+      <<JSIncludes>>
+      <<WebGL-Skeleton>>
+    </head>
+    <body onload="webGLStart();">
+      <<Canvas>>
+    </body>
+  </html>
+#+end_src
+
+#+name: WebGL-Skeleton
+#+begin_src html
+  <script type="text/javascript">
+    var gl;
+    <<WebGL-Matrices-Skeleton>>
+    <<WebGL-Canvas-Init>>
+    <<WebGL-Init-Skeleton>>
+    <<WebGL-DrawScene-Skeleton>>
+    <<WebGL-Tick-Skeleton>>
+  </script>
+#+end_src
+
+#+name: WebGL-Init-Skeleton
+#+begin_src javascript
+    function webGLStart() {
+        var canvas = document.getElementById("webgl_canvas");
+        initGL(canvas);
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+ 
+        tick();
+    }
+#+end_src
+
+#+name: WebGL-Tick-Skeleton
+#+begin_src javascript
+    function tick() {
+        requestAnimFrame(tick);
+        drawScene();
+    }
+#+end_src
+
+#+name: WebGL-DrawScene-Skeleton
+#+begin_src javascript
+ 
+    function drawScene() {
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+ 
+        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+ 
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+        gl.enable(gl.BLEND);
+
+        //tu kod rysujacy
+     }
+
+#+end_src
+
+#+name: WebGL-Matrices-Skeleton
+#+begin_src javascript
+    var pMatrix = mat4.create();
+#+end_src
+
 ** Simple particle
 
 #+name: Example - simple particle
@@ -63,13 +120,110 @@ Using Org-Babel to write a tutorial :).
       <<JSIncludes>>
       <<FragmentShader>>
       <<VertexShader>>
+      <<WebGL-simple-particle>>
     </head>
-    <body>
-      <<CANVAS>>
+    <body onload="webGLStart();">
+      <<Canvas>>
     </body>
   </html>
   
 #+end_src
+
+#+name: WebGL-simple-particle
+#+begin_src html
+  <script type="text/javascript">
+    <<WebGL-Canvas-Init>>
+    <<WebGL-Shaders-Init>>
+    <<WebGL-Buffers-Init>>
+    <<WebGL-Init>>
+  </script>
+#+end_src
+
+* /b/
+** Unassigned code
+#+name: JSIncludes
+#+begin_src html
+  <script type="text/javascript" src="js/gl-matrix-min.js"></script>
+  <script type="text/javascript" src="js/webgl-utils.js"></script>
+#+end_src
+
+#+name: Canvas
+#+begin_src html
+  <canvas id="webgl_canvas" style="border: none;" width="640" height="480"></canvas>
+#+end_src
+
+#+name: WebGL-Init
+#+begin_src javascript
+    function webGLStart() {
+        var canvas = document.getElementById("webgl_canvas");
+        initGL(canvas);
+        initShaders();
+//        initBuffers();
+//        initTexture();
+//        initWorldObjects();
+ 
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+ 
+//        document.onkeydown = handleKeyDown;
+//        document.onkeyup = handleKeyUp;
+ 
+        tick();
+    }
+#+end_src
+
+#+name: WebGL-Canvas-Init
+#+begin_src javascript
+    function initGL(canvas) {
+        try {
+            gl = canvas.getContext("experimental-webgl");
+            gl.viewportWidth = canvas.width;
+            gl.viewportHeight = canvas.height;
+        } catch (e) {
+        }
+        if (!gl) {
+            alert("Could not initialise WebGL, sorry :-(");
+        }
+    }
+#+end_src
+
+#+name: WebGL-Shaders-Init
+#+begin_src javascript
+
+#+end_src
+
+#+name: WebGL-Buffers-Init
+#+begin_src javascript
+    var particleVertexPositionBuffer;
+    var particleVertexTextureCoordBuffer;
+ 
+    function initBuffers() {
+        particleVertexPositionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexPositionBuffer);
+        vertices = [
+            -1.0, -1.0,  0.0,
+             1.0, -1.0,  0.0,
+            -1.0,  1.0,  0.0,
+             1.0,  1.0,  0.0
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        particleVertexPositionBuffer.itemSize = 3;
+        particleVertexPositionBuffer.numItems = 4;
+ 
+        particleVertexTextureCoordBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexTextureCoordBuffer);
+        var textureCoords = [
+            0.0, 0.0,
+            1.0, 0.0,
+            0.0, 1.0,
+            1.0, 1.0
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
+        particleVertexTextureCoordBuffer.itemSize = 2;
+        particleVertexTextureCoordBuffer.numItems = 4;
+    }
+ 
+#+end_src
+
 
 
 * TO DO

@@ -1,0 +1,49 @@
+
+<html>
+  <head>
+    <script type="text/javascript" src="js/gl-matrix-min.js"></script>
+    <script type="text/javascript" src="js/webgl-utils.js"></script>
+    <script type="text/javascript">
+      var gl;
+      var pMatrix = mat4.create();
+      function initGL(canvas) {
+          try {
+              gl = canvas.getContext("experimental-webgl");
+              gl.viewportWidth = canvas.width;
+              gl.viewportHeight = canvas.height;
+          } catch (e) {
+          }
+          if (!gl) {
+              alert("Could not initialise WebGL, sorry :-(");
+          }
+      }
+      function webGLStart() {
+          var canvas = document.getElementById("webgl_canvas");
+          initGL(canvas);
+          gl.clearColor(0.0, 0.0, 0.0, 1.0);
+       
+          tick();
+      }
+       
+      function drawScene() {
+          gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+       
+          mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+       
+          gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+          gl.enable(gl.BLEND);
+      
+          //tu kod rysujacy
+       }
+      
+      function tick() {
+          requestAnimFrame(tick);
+          drawScene();
+      }
+    </script>
+  </head>
+  <body onload="webGLStart();">
+    <canvas id="webgl_canvas" style="border: none;" width="640" height="480"></canvas>
+  </body>
+</html>

@@ -31,8 +31,67 @@
             vTextureCoord = aTextureCoord;
         }
     </script>
+    <script type="text/javascript">
+      function initGL(canvas) {
+          try {
+              gl = canvas.getContext("experimental-webgl");
+              gl.viewportWidth = canvas.width;
+              gl.viewportHeight = canvas.height;
+          } catch (e) {
+          }
+          if (!gl) {
+              alert("Could not initialise WebGL, sorry :-(");
+          }
+      }
+      
+      
+      var particleVertexPositionBuffer;
+      var particleVertexTextureCoordBuffer;
+       
+      function initBuffers() {
+          particleVertexPositionBuffer = gl.createBuffer();
+          gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexPositionBuffer);
+          vertices = [
+              -1.0, -1.0,  0.0,
+               1.0, -1.0,  0.0,
+              -1.0,  1.0,  0.0,
+               1.0,  1.0,  0.0
+          ];
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+          particleVertexPositionBuffer.itemSize = 3;
+          particleVertexPositionBuffer.numItems = 4;
+       
+          particleVertexTextureCoordBuffer = gl.createBuffer();
+          gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexTextureCoordBuffer);
+          var textureCoords = [
+              0.0, 0.0,
+              1.0, 0.0,
+              0.0, 1.0,
+              1.0, 1.0
+          ];
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
+          particleVertexTextureCoordBuffer.itemSize = 2;
+          particleVertexTextureCoordBuffer.numItems = 4;
+      }
+       
+          function webGLStart() {
+              var canvas = document.getElementById("webgl_canvas");
+              initGL(canvas);
+              initShaders();
+      //        initBuffers();
+      //        initTexture();
+      //        initWorldObjects();
+       
+              gl.clearColor(0.0, 0.0, 0.0, 1.0);
+       
+      //        document.onkeydown = handleKeyDown;
+      //        document.onkeyup = handleKeyUp;
+       
+              tick();
+          }
+    </script>
   </head>
-  <body>
-    
+  <body onload="webGLStart();">
+    <canvas id="webgl_canvas" style="border: none;" width="640" height="480"></canvas>
   </body>
 </html>
