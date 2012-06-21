@@ -234,6 +234,243 @@ Blablabla, opis shaderów.
   
 #+end_src
 
+
+* Adv. emiter
+
+#+name: AdvancedParticleObject
+#+begin_src javascript
+    function Particle() {
+        this.pos = vec3.create();
+        this.vel = vec3.create();
+
+        this.energy = 0.0;
+        this.initialEnergy = 0.0;
+
+        this.startColor = {r : 1.0, g : 1.0, b : 1.0};
+        this.endColor = {r : 1.0, g : 1.0, b : 1.0};
+
+        this.startSize = 1.0;
+        this.endSize = 1.0;
+
+        this.startRotation = 0.0;
+
+        this.mass = 1.0;
+    }
+
+#+end_src
+
+FIXME move this somewhere else
+#+name: Utils
+#+begin_src javascript
+  function LERP(a, b, p) {
+      return a * (1-p) + b * p;
+  }
+#+end_src
+
+#+name: AdvancedEmitterObject
+#+begin_src javascript
+  function Emitter() {
+      
+      //default data
+      this.pos = vec3.create();
+      this.startSize = 1.0;
+      this.endSize = 1.0;
+      
+      this.startEnergy = 3.0;
+      this.startSpeed = 2.0;
+      
+      this.startColor = {r : 1.0, g : 1.0, b : 1.0, a : 1.0};
+      this.endColor = {r : 1.0, g : 1.0, b : 1.0, a : 0.0};
+      
+      this.particles = [];
+      this.maxParticles = 1000;
+      this.liveParticles = 0;
+      
+      this.particlesPerFrame = 10;
+  
+      this.particleMass = 1.0;
+      this.startRotation = 0.0;
+  
+      var ip;
+      for(ip = 0 ; ip < this.maxParticles ; ++ip) {
+          this.particles[ip] = new Particle();
+      }
+      
+      this.accumulator = 0.0;
+      this.cooldown = 0.25;
+    
+      this.texture = null;
+     
+      //user-configurable particle initialization
+      this.getParticlesPerFrame = function() {
+          return this.particlesPerFrame;
+      }
+  
+      this.getParticleStartPosition = function() {
+          return this.pos;
+      }
+  
+      this.getParticleStartEnergy = function() {
+          return this.startEnergy;
+      }
+  
+      this.getParticleStartVelocity = function() {
+          var velocity;
+          vec3.scale(vec3.create([Math.random() - 0.5, Math.random() - 0.5, 0]), this.startSpeed, velocity);
+          return velocity;
+      }
+  
+      this.getParticleStartColor = function() {
+          return CloneColor(this.startColor);
+      }
+  
+      this.getParticleEndColor = function() {
+          return CloneColor(this.endColor);
+      }
+  
+      this.getParticleMass = function() {
+          return this.particleMass;
+      }
+  
+      this.getParticleStartSize = function() {
+          return this.startSize;
+      }
+  
+      this.getParticleEndSize = function() {
+          return this.endSize;
+      }
+  
+      this.getParticleStartRotation = function() {
+          return this.startRotation;
+      }
+  
+      //user-configurable particle update
+      this.computeParticleColor = function(particle) {
+          return ColorLERP(particle.startColor, particle.endColor, (1-particle.energy / particle.initialEnergy));
+      }
+  
+      this.computeForces = function(particle) {
+          return vec3.create([0, 0, 0]);
+      }
+  
+      this.computeParticleSize = function(particle) {
+          return LERP(particle.startSize, particle.endSize, (1-particle.energy / particle.initialEnergy));
+      }
+  
+      this.computeParticleRotation = function(particle) {
+          return 0.0;
+      }
+  
+      //algorithms
+      this.setTexture = function(name) {
+          this.texture = gl.createTexture();
+          this.texture.image = new Image();
+          var fj = this; //hacking around callbacks
+          this.texture.image.onload = function () {
+              handleLoadedTexture(fj.texture)
+          }
+          
+          this.texture.image.src = name;
+      };
+  
+      //FIXME from this point down code is copypasted and needs adaptation
+      this.update = function(time) {
+          var i;
+          //update current particles
+          for(i = 0 ; i < this.liveParticles ; ++i) {
+              this.particles[i].energy -= time;
+  
+              var forces = this.computeForces(this.particles[i]);
+              vec3.scale(forces, time);
+              vec3.add(this.particles[i].vel, forces);
+  
+              var path = vec3.create([0, 0, 0]);
+              vec3.scale(this.particles[i].vel, time/this.particles[i].mass, path);
+              vec3.add(this.particles[i].pos, path);
+  
+              if(this.particles[i].energy < 0) {
+                  //swap dead with live particles;
+                  var temp = this.particles[i];
+                  this.particles[i] = this.particles[this.liveParticles-1];
+                  this.particles[this.liveParticles - 1] = temp;
+                  --this.liveParticles;
+              }
+          }
+  
+          //spawn new particles
+          this.accumulator += time;
+          while(this.accumulator > this.cooldown) {
+              this.accumulator -= this.cooldown;
+              var ppf = this.getParticlesPerFrame();
+              for(i = 0 ; i < ppf ; ++i) {
+                  this.emitParticle();
+              }
+          }
+  
+      };
+
+      this.draw = function() {
+          var i;
+          for(i = 0 ; i < this.liveParticles ; ++i) {
+              this.drawParticle(this.particles[i]);
+          }
+      };
+  
+      this.emitParticle = function() {
+          if(this.liveParticles < this.maxParticles) {
+              var i = this.liveParticles;
+              this.particles[i].pos = this.getParticleStartPosition();
+              this.particles[i].vel = this.getParticleStartVelocity();
+  
+              this.particles[i].energy = this.particles[i].initialEnergy = this.getParticleStartEnergy();
+  
+              this.particles[i].startColor = this.getParticleStartColor();
+              this.particles[i].endColor = this.getParticleEndColor();
+  
+              this.particles[i].startSize = this.getParticleStartSize();
+              this.particles[i].endSize = this.getParticleEndSize();
+  
+              this.particles[i].startRotation = this.getParticleStartRotation();
+  
+              this.particles[i].mass = this.getParticleMass();
+  
+              ++this.liveParticles;
+              
+          }
+      };
+  
+      this.drawParticle = function(particle) {
+          mvPushMatrix();
+          //translate to proper location
+  
+          mat4.translate(mvMatrix, particle.pos);
+          mat4.rotateZ(mvMatrix, this.computeParticleRotation(particle));
+          mat4.scale(mvMatrix, this.computeParticleSize(particle));
+  
+          var color = this.computeParticleColor(particle);
+          gl.uniform4f(shaderProgram.colorUniform, color.r, color.g, color.b, color.a);
+  
+          //draw
+          gl.activeTexture(gl.TEXTURE0);
+          gl.bindTexture(gl.TEXTURE_2D, this.texture);
+          gl.uniform1i(shaderProgram.samplerUniform, 0);
+          
+          gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexTextureCoordBuffer);
+          gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, particleVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+          
+          gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexPositionBuffer);
+          gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, particleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+          
+          setMatrixUniforms();
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, particleVertexPositionBuffer.numItems);
+  
+          mvPopMatrix();
+      };
+  
+  }
+  
+#+end_src
+
 * Tangled files   
 ** Skeleton
 #+name: Skeleton
