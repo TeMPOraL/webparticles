@@ -144,6 +144,8 @@ Blablabla, opis shaderów.
               vec3.scale(this.particles[i].vel, time, path);
               vec3.add(this.particles[i].pos, path);
   
+              this.particles[i].color = ColorLERP(this.startColor, this.endColor, (1.0 - this.particles[i].energy/this.startEnergy));
+  
               if(this.particles[i].energy < 0) {
                   //swap dead with live particles;
                   var temp = this.particles[i];
@@ -180,7 +182,7 @@ Blablabla, opis shaderów.
               vec3.normalize(this.particles[i].vel);
               vec3.scale(this.particles[i].vel, this.startSpeed);
               this.particles[i].energy = this.startEnergy;
-  //            this.particles[i].color =  FIXME how to copy color in JS?
+              this.particles[i].color = CloneColor(this.startColor);
               ++this.liveParticles;
               
           }
@@ -213,6 +215,22 @@ Blablabla, opis shaderów.
       };
   
   };
+  
+#+end_src
+
+#+name: ColorUtils
+#+begin_src javascript
+  function ColorLERP(color1, color2, p) {
+      var red = color1.r * (1-p) + color2.r*p;
+      var green = color1.g * (1-p) + color2.g*p;
+      var blue = color1.b * (1-p) + color2.b*p;
+      var alpha = color1.a * (1-p) + color2.a*p;
+      return { r : red, g : green, b : blue, a : alpha};
+  }
+  
+  function CloneColor(color) {
+      return { r : color.r, g : color.g, b : color.b, a : color.a };
+  }
   
 #+end_src
 
@@ -434,6 +452,8 @@ Blablabla, opis shaderów.
     <<WebGL-Buffers-Init>>
     <<WebGL-Textures-Load>>
     <<WebGL-Texture-Init-Simple-Emitter>>
+
+    <<ColorUtils>>
 
     <<SimpleParticleObject>>
     <<SimpleEmitterObject>>
