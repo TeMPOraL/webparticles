@@ -29,7 +29,7 @@ Using Org-Babel to write a tutorial :).
 
       mat4.translate(mvMatrix, particle.pos);
 
-      gl.uniform3f(shaderProgram.colorUniform, particle.color.r, particle.color.g, particle.color.b);
+      gl.uniform4f(shaderProgram.colorUniform, particle.color.r, particle.color.g, particle.color.b, particle.color.a);
 
       //draw
       gl.activeTexture(gl.TEXTURE0);
@@ -62,11 +62,11 @@ Blablabla, opis shaderów.
  
     uniform sampler2D uSampler;
  
-    uniform vec3 uColor;
+    uniform vec4 uColor;
  
     void main(void) {
         vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-        gl_FragColor = textureColor * vec4(uColor, 1.0);
+        gl_FragColor = textureColor * uColor;
     }
 </script>
 #+end_src
@@ -195,7 +195,7 @@ Blablabla, opis shaderów.
           mat4.translate(mvMatrix, particle.pos);
           mat4.scale(mvMatrix, this.size);
   
-          gl.uniform3f(shaderProgram.colorUniform, particle.color.r, particle.color.g, particle.color.b);
+          gl.uniform4f(shaderProgram.colorUniform, particle.color.r, particle.color.g, particle.color.b, particle.color.a);
   
           //draw
           gl.activeTexture(gl.TEXTURE0);
