@@ -96,7 +96,7 @@ Blablabla, opis shaderów.
 #+name: SimpleEmitterObject
 #+begin_src javascript
   function Emitter() {
-      //state
+      //state :)
       this.pos = vec3.create([0, 0, 0]);
       this.size = vec3.create([1.0, 1.0, 1.0]);
   
@@ -408,7 +408,7 @@ FIXME move this somewhere else
           }
   
       };
-
+  
       this.draw = function() {
           var i;
           for(i = 0 ; i < this.liveParticles ; ++i) {
