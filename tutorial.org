@@ -300,6 +300,8 @@ FIXME move this somewhere else
       this.cooldown = 0.25;
     
       this.texture = null;
+  
+      this.useAdditiveBlending = true;
      
       //user-configurable particle initialization
       this.getParticlesPerFrame = function() {
@@ -307,7 +309,7 @@ FIXME move this somewhere else
       }
   
       this.getParticleStartPosition = function() {
-          return this.pos;
+          return vec3.create(this.pos);
       }
   
       this.getParticleStartEnergy = function() {
@@ -315,9 +317,7 @@ FIXME move this somewhere else
       }
   
       this.getParticleStartVelocity = function() {
-          var velocity;
-          vec3.scale(vec3.create([Math.random() - 0.5, Math.random() - 0.5, 0]), this.startSpeed, velocity);
-          return velocity;
+          return vec3.scale(vec3.normalize(vec3.create([Math.random() - 0.5, Math.random() - 0.5, 0])), this.startSpeed);
       }
   
       this.getParticleStartColor = function() {
@@ -354,7 +354,8 @@ FIXME move this somewhere else
       }
   
       this.computeParticleSize = function(particle) {
-          return LERP(particle.startSize, particle.endSize, (1-particle.energy / particle.initialEnergy));
+          var scale = LERP(particle.startSize, particle.endSize, (1-particle.energy / particle.initialEnergy));
+          return vec3.create([scale, scale, scale]);
       }
   
       this.computeParticleRotation = function(particle) {
@@ -410,6 +411,13 @@ FIXME move this somewhere else
       };
   
       this.draw = function() {
+          if(this.useAdditiveBlending) {
+              gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+          }
+          else {
+              gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+          }
+  
           var i;
           for(i = 0 ; i < this.liveParticles ; ++i) {
               this.drawParticle(this.particles[i]);
@@ -469,6 +477,7 @@ FIXME move this somewhere else
   
   }
   
+    
 #+end_src
 
 * Tangled files   
@@ -695,12 +704,12 @@ FIXME move this somewhere else
     <<SimpleParticleObject>>
     <<SimpleEmitterObject>>
 
-    <<WebGL-World-Init-Simple-Emitter>>
-    <<WebGL-Init-Simple-Emitter>>
-    <<Update-World-Simple-Emitter>>
-    <<WebGL-DrawScene-Simple-Emitter>>
+    <<WebGL-World-Init-Advanced-Emitter>>
+    <<WebGL-Init-Advanced-Emitter>>
+    <<Update-World-Advanced-Emitter>>
+    <<WebGL-DrawScene-Advanced-Emitter>>
     <<WebGL-Animate-VariableStep>>
-    <<WebGL-Tick-Simple-Emitter>>
+    <<WebGL-Tick-Advanced-Emitter>>
   </script>
 #+end_src
 
@@ -718,6 +727,7 @@ FIXME move this somewhere else
         tick();
     }
 #+end_src
+
 
 #+name: WebGL-World-Init-Simple-Emitter
 #+begin_src javascript
@@ -743,6 +753,7 @@ FIXME move this somewhere else
   }
   
 #+end_src
+
 
 #+name: WebGL-Tick-Simple-Emitter
 #+begin_src javascript
@@ -783,10 +794,354 @@ FIXME move this somewhere else
 #+end_src
 
 
+
 To wszystko idzie do przerycia; stanie się elementem emitera.
 #+name: WebGL-Texture-Init-Simple-Emitter
 #+begin_src javascript
 
+#+end_src
+
+
+** Advanced Emitter
+
+#+name: Example - advanced emitter
+#+begin_src html :tangle advanced-emitter.html :noweb tangle
+  <html>
+    <head>
+      <title>Zaawansowany emiter cząstek</title>
+      <<JSIncludes>>
+      <<FragmentShader>>
+      <<VertexShader>>
+
+      <<WebGL-Advanced-Emitter>>
+    </head>
+    <body onload="webGLStart();">
+      <<Canvas>>
+    </body>
+  </html>
+  
+#+end_src
+
+
+*** Substructure
+
+#+name: WebGL-Advanced-Emitter
+#+begin_src html
+  <script type="text/javascript">
+    <<WebGL-Matrix-Code>>
+    <<WebGL-Canvas-Init>>
+    <<WebGL-Shaders-Init>>
+    <<WebGL-Buffers-Init>>
+    <<WebGL-Textures-Load>>
+    <<WebGL-Texture-Init-Advanced-Emitter>>
+
+    <<ColorUtils>>
+
+    <<AdvancedParticleObject>>
+
+    //FIXME!
+    <<Utils>>
+    <<AdvancedEmitterObject>>
+
+    <<WebGL-World-Init-Advanced-Emitter>>
+    <<WebGL-Init-Advanced-Emitter>>
+    <<Update-World-Advanced-Emitter>>
+    <<WebGL-DrawScene-Advanced-Emitter>>
+    <<WebGL-Animate-VariableStep>>
+    <<WebGL-Tick-Advanced-Emitter>>
+  </script>
+#+end_src
+
+
+#+name: WebGL-Init-Advanced-Emitter
+#+begin_src javascript
+<<WebGL-Init-Simple-Emitter>>
+#+end_src
+
+
+#+name: WebGL-World-Init-Advanced-Emitter
+#+begin_src javascript
+  var testEmitter;
+  var testEmitter2;
+  
+  function initWorld() {
+      testEmitter = new Emitter();
+      testEmitter.pos = vec3.create([1, 1, -8]);
+      testEmitter.startSize = 0.5;
+      testEmitter.endSize = 0.5;
+      testEmitter.setTexture("data/star.gif");
+      testEmitter.startColor = { r : 1.0, g : 0.0, b : 1.0, a : 1.0};
+      testEmitter.endColor = { r : 0.0, g : 1.0, b : 0.0, a : 0.0};
+  
+  
+      testEmitter2 = new Emitter();
+      testEmitter2.pos = vec3.create([-1, -1, -9]);
+      testEmitter2.startSize = 0.25;
+      testEmitter2.endSize = 0.25;
+      testEmitter2.startEnergy = 5.0;
+      testEmitter2.cooldown = 1.0;
+      testEmitter2.startVelocity = vec3.create([1.0, 1.0, 0.0]);
+      testEmitter2.setTexture("data/flower.png");
+  }
+  
+#+end_src
+
+#+name: WebGL-Tick-Advanced-Emitter
+#+begin_src javascript
+<<WebGL-Tick-Simple-Emitter>>
+#+end_src
+
+#+name: WebGL-DrawScene-Advanced-Emitter
+#+begin_src javascript
+ 
+    function drawScene() {
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+ 
+        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+ 
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+        gl.enable(gl.BLEND);
+
+        mat4.identity(mvMatrix);
+        //tu kod rysujacy
+
+        testEmitter.draw();
+        testEmitter2.draw();
+     }
+
+#+end_src
+
+#+name: Update-World-Advanced-Emitter
+#+begin_src javascript
+  function UpdateWorld(dt) {
+      testEmitter.update(dt);
+      testEmitter2.update(dt);
+  }
+#+end_src
+
+
+** Advanced Emitter - Jet Demo
+
+#+name: Example - advanced emitter jet demo
+#+begin_src html :tangle advanced-emitter-jet-demo.html :noweb tangle
+  <html>
+    <head>
+      <title>Zaawansowany emiter cząstek - symulacja odrzutu</title>
+      <<JSIncludes>>
+      <<FragmentShader>>
+      <<VertexShader>>
+
+      <<WebGL-Advanced-Emitter-Jet>>
+    </head>
+    <body onload="webGLStart();">
+      <<Canvas>>
+    </body>
+  </html>
+  
+#+end_src
+
+*** Substructure
+
+#+name: WebGL-Advanced-Emitter-Jet
+#+begin_src html
+  <script type="text/javascript">
+    <<WebGL-Matrix-Code>>
+    <<WebGL-Canvas-Init>>
+    <<WebGL-Shaders-Init>>
+    <<WebGL-Buffers-Init>>
+    <<WebGL-Textures-Load>>
+    <<WebGL-Texture-Init-Advanced-Emitter>>
+
+    <<ColorUtils>>
+
+    <<AdvancedParticleObject>>
+
+    //FIXME!
+    <<Utils>>
+    <<AdvancedEmitterObject>>
+
+    <<WebGL-World-Init-Advanced-Emitter-Jet>>
+    <<WebGL-Init-Advanced-Emitter>>
+    <<Update-World-Advanced-Emitter>>
+    <<WebGL-DrawScene-Advanced-Emitter>>
+    <<WebGL-Animate-VariableStep>>
+    <<WebGL-Tick-Advanced-Emitter>>
+  </script>
+#+end_src
+
+#+name: WebGL-World-Init-Advanced-Emitter-Jet
+#+begin_src javascript
+  var testEmitter;
+  var testEmitter2;
+  
+  function initWorld() {
+      testEmitter = new Emitter();
+      testEmitter.pos = vec3.create([1, 1, -8]);
+      testEmitter.startSize = 0.5;
+      testEmitter.endSize = 0.5;
+      testEmitter.setTexture("data/star.gif");
+      testEmitter.startColor = { r : 0.0, g : 0.0, b : 1.0, a : 1.0};
+      testEmitter.endColor = { r : 0.0, g : 1.0, b : 0.0, a : 0.0};
+  
+  
+      testEmitter2 = new Emitter();
+      testEmitter2.pos = vec3.create([-1, -1, -9]);
+      testEmitter2.startSize = 0.25;
+      testEmitter2.endSize = 0.25;
+      testEmitter2.startEnergy = 5.0;
+      testEmitter2.cooldown = 1.0;
+      testEmitter2.startVelocity = vec3.create([1.0, 1.0, 0.0]);
+      testEmitter2.setTexture("data/flower.png");
+  }
+  
+#+end_src
+
+
+** Advanced Emitter - Smoke Demo
+
+#+name: Example - advanced emitter smoke demo
+#+begin_src html :tangle advanced-emitter-smoke-demo.html :noweb tangle
+  <html>
+    <head>
+      <title>Zaawansowany emiter cząstek - symulacja dymu</title>
+      <<JSIncludes>>
+      <<FragmentShader>>
+      <<VertexShader>>
+
+      <<WebGL-Advanced-Emitter-Smoke>>
+    </head>
+    <body onload="webGLStart();">
+      <<Canvas>>
+    </body>
+  </html>
+  
+#+end_src
+
+*** Substructure
+
+#+name: WebGL-Advanced-Emitter-Smoke
+#+begin_src html
+  <script type="text/javascript">
+    <<WebGL-Matrix-Code>>
+    <<WebGL-Canvas-Init>>
+    <<WebGL-Shaders-Init>>
+    <<WebGL-Buffers-Init>>
+    <<WebGL-Textures-Load>>
+    <<WebGL-Texture-Init-Advanced-Emitter>>
+
+    <<ColorUtils>>
+
+    <<AdvancedParticleObject>>
+
+    //FIXME!
+    <<Utils>>
+    <<AdvancedEmitterObject>>
+
+    <<WebGL-World-Init-Advanced-Emitter-Smoke>>
+    <<WebGL-Init-Advanced-Emitter>>
+    <<Update-World-Advanced-Emitter>>
+    <<WebGL-DrawScene-Advanced-Emitter>>
+    <<WebGL-Animate-VariableStep>>
+    <<WebGL-Tick-Advanced-Emitter>>
+  </script>
+#+end_src
+
+#+name: WebGL-World-Init-Advanced-Emitter-Smoke
+#+begin_src javascript
+  var testEmitter;
+  var testEmitter2;
+  
+  function initWorld() {
+      testEmitter = new Emitter();
+      testEmitter.pos = vec3.create([1, 1, -8]);
+      testEmitter.startSize = 0.5;
+      testEmitter.endSize = 0.5;
+      testEmitter.setTexture("data/star.gif");
+      testEmitter.startColor = { r : 0.0, g : 0.0, b : 1.0, a : 1.0};
+      testEmitter.endColor = { r : 0.0, g : 1.0, b : 0.0, a : 0.0};
+  
+  
+      testEmitter2 = new Emitter();
+      testEmitter2.particlesPerFrame = 0;
+  }
+  
+#+end_src
+
+** Advanced Emitter - Snow Demo
+
+#+name: Example - advanced emitter snow demo
+#+begin_src html :tangle advanced-emitter-snow-demo.html :noweb tangle
+  <html>
+    <head>
+      <title>Zaawansowany emiter cząstek - symulacje fizyczne</title>
+      <<JSIncludes>>
+      <<FragmentShader>>
+      <<VertexShader>>
+
+      <<WebGL-Advanced-Emitter-Snow>>
+    </head>
+    <body onload="webGLStart();">
+      <<Canvas>>
+    </body>
+  </html>
+  
+#+end_src
+
+*** Substructure
+
+#+name: WebGL-Advanced-Emitter-Snow
+#+begin_src html
+  <script type="text/javascript">
+    <<WebGL-Matrix-Code>>
+    <<WebGL-Canvas-Init>>
+    <<WebGL-Shaders-Init>>
+    <<WebGL-Buffers-Init>>
+    <<WebGL-Textures-Load>>
+    <<WebGL-Texture-Init-Advanced-Emitter>>
+
+    <<ColorUtils>>
+
+    <<AdvancedParticleObject>>
+
+    //FIXME!
+    <<Utils>>
+    <<AdvancedEmitterObject>>
+
+    <<WebGL-World-Init-Advanced-Emitter-Snow>>
+    <<WebGL-Init-Advanced-Emitter>>
+    <<Update-World-Advanced-Emitter>>
+    <<WebGL-DrawScene-Advanced-Emitter>>
+    <<WebGL-Animate-VariableStep>>
+    <<WebGL-Tick-Advanced-Emitter>>
+  </script>
+#+end_src
+
+#+name: WebGL-World-Init-Advanced-Emitter-Snow
+#+begin_src javascript
+  var testEmitter;
+  var testEmitter2;
+  
+  function initWorld() {
+      testEmitter = new Emitter();
+      testEmitter.pos = vec3.create([1, 1, -8]);
+      testEmitter.startSize = 0.5;
+      testEmitter.endSize = 0.5;
+      testEmitter.setTexture("data/star.gif");
+      testEmitter.startColor = { r : 0.0, g : 0.0, b : 1.0, a : 1.0};
+      testEmitter.endColor = { r : 0.0, g : 1.0, b : 0.0, a : 0.0};
+  
+  
+      testEmitter2 = new Emitter();
+      testEmitter2.pos = vec3.create([-1, -1, -9]);
+      testEmitter2.startSize = 0.25;
+      testEmitter2.endSize = 0.25;
+      testEmitter2.startEnergy = 5.0;
+      testEmitter2.cooldown = 1.0;
+      testEmitter2.startVelocity = vec3.create([1.0, 1.0, 0.0]);
+      testEmitter2.setTexture("data/flower.png");
+  }
+  
 #+end_src
 
 
@@ -1003,9 +1358,17 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
 ** DONE Particle emitter code + display
    - demo a simple (magic) explosion
 ** TODO Improved emitter (physics) + display
-   - demo snowe
+   - demo snow
+     - randomizowana pozycja startowa
+     - siły wiatru + grawitacja, wiatr się zmienia co losowy czas
+     - kolor stały
    - demo smoke
+     - kolor od białego/szarego do czarnego, z przesunięciem środka w lewo
+     - grawitacja + wypór = siła zależna od wysokości ;)
+     - vel startowy mocno w lewo :)
    - demo jet
+     - vel mocno w jakąś stronę
+     - orange-white colors
 ** TODO Bonus
    - particles that follow path
    - demo <3 :).

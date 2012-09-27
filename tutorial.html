@@ -1,0 +1,1527 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Systemy cząsteczkowe w WebGL - tutorial</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="title" content="Systemy cząsteczkowe w WebGL - tutorial"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2012-09-27 18:24:23 Środkowoeuropejski czas letni"/>
+<meta name="author" content=""/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  div.inlinetask {
+    padding:10px;
+    border:2px solid gray;
+    margin:10px;
+    background: #ffffcc;
+  }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">Systemy cząsteczkowe w WebGL - tutorial</h1>
+
+<p>Using Org-Babel to write a tutorial :).
+</p>
+
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 WebGL - szkielet</a></li>
+<li><a href="#sec-2">2 Cząsteczki</a></li>
+<li><a href="#sec-3">3 Emiter</a></li>
+<li><a href="#sec-4">4 Adv. emiter</a></li>
+<li><a href="#sec-5">5 Tangled files</a>
+<ul>
+<li><a href="#sec-5-1">5.1 Skeleton</a>
+<ul>
+<li><a href="#sec-5-1-1">5.1.1 Substructure</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-2">5.2 Simple particle</a>
+<ul>
+<li><a href="#sec-5-2-1">5.2.1 Substructure</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-3">5.3 Simple emitter</a>
+<ul>
+<li><a href="#sec-5-3-1">5.3.1 Substructure</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-4">5.4 Advanced Emitter</a>
+<ul>
+<li><a href="#sec-5-4-1">5.4.1 Substructure</a></li>
+</ul></li>
+</ul>
+</li>
+<li><a href="#sec-6">6 <i>b</i></a>
+<ul>
+<li><a href="#sec-6-1">6.1 Links to use in the tutorial</a>
+<ul>
+<li><a href="#sec-6-1-1">6.1.1 http://nehe.gamedev.net/tutorial/particle_engine_using_triangle_strips/21001/</a></li>
+<li><a href="#sec-6-1-2">6.1.2 http://webgl-tuts.webninja.eu/#tutorials-tutorial10- (!!??!)</a></li>
+<li><a href="#sec-6-1-3">6.1.3 http://learningwebgl.com/blog/?p=1008</a></li>
+</ul>
+</li>
+<li><a href="#sec-6-2">6.2 Unassigned code</a></li>
+</ul>
+</li>
+<li><a href="#sec-7">7 TO DO</a>
+<ul>
+<li><a href="#sec-7-1">7.1 Empty canvas</a></li>
+<li><a href="#sec-7-2">7.2 Particle code + display</a>
+<ul>
+<li><a href="#sec-7-2-1">7.2.1 Press a button/link to change particle color ;).</a></li>
+</ul>
+</li>
+<li><a href="#sec-7-3">7.3 Particle emitter code + display</a></li>
+<li><a href="#sec-7-4">7.4 Improved emitter (physics) + display</a></li>
+<li><a href="#sec-7-5">7.5 Bonus</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> WebGL - szkielet</h2>
+<div class="outline-text-2" id="text-1">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Cząsteczki</h2>
+<div class="outline-text-2" id="text-2">
+
+
+
+
+
+<pre class="example">function Particle() {
+    this.pos = vec3.create();
+    this.vel = vec3.create();
+    this.energy = 0.0;
+    this.color = {r : 1.0, g : 1.0, b : 1.0};
+}
+
+</pre>
+
+
+
+<pre class="example">
+function drawParticle(particle) {
+
+    mvPushMatrix();
+    //translate to proper location
+
+    mat4.translate(mvMatrix, particle.pos);
+
+    gl.uniform4f(shaderProgram.colorUniform, particle.color.r, particle.color.g, particle.color.b, particle.color.a);
+
+    //draw
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, particleTexture);
+    gl.uniform1i(shaderProgram.samplerUniform, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexTextureCoordBuffer);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, particleVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexPositionBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, particleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    setMatrixUniforms();
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, particleVertexPositionBuffer.numItems);
+
+    mvPopMatrix();
+}
+
+
+</pre>
+
+
+<p>
+Blablabla, opis shaderów.
+</p>
+
+
+
+<pre class="example">&lt;script id="shader-fs" type="x-shader/x-fragment"&gt;
+    precision mediump float;
+
+    varying vec2 vTextureCoord;
+
+    uniform sampler2D uSampler;
+
+    uniform vec4 uColor;
+
+    void main(void) {
+        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+        gl_FragColor = textureColor * uColor;
+    }
+&lt;/script&gt;
+</pre>
+
+
+
+
+
+<pre class="example">&lt;script id="shader-vs" type="x-shader/x-vertex"&gt;
+    attribute vec3 aVertexPosition;
+    attribute vec2 aTextureCoord;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+
+    varying vec2 vTextureCoord;
+
+    void main(void) {
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        vTextureCoord = aTextureCoord;
+    }
+&lt;/script&gt;
+</pre>
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Emiter</h2>
+<div class="outline-text-2" id="text-3">
+
+
+
+
+
+<pre class="example">function Emitter() {
+    //state :)
+    this.pos = vec3.create([0, 0, 0]);
+    this.size = vec3.create([1.0, 1.0, 1.0]);
+
+    this.startEnergy = 3.0;
+    this.startSpeed = 2.0;
+
+    this.startColor = {r : 1.0, g : 1.0, b : 1.0, a : 1.0};
+    this.endColor = {r : 1.0, g : 1.0, b : 1.0, a : 0.0};
+
+    this.particles = [];
+    this.maxParticles = 1000;
+    this.liveParticles = 0;
+
+    this.particlesPerFrame = 10;
+
+    var ip;
+    for(ip = 0 ; ip &lt; this.maxParticles ; ++ip) {
+        this.particles[ip] = new Particle();
+    }
+
+    this.accumulator = 0.0;
+    this.cooldown = 0.25;
+
+    this.texture = null;
+
+    //functions
+    this.setTexture = function(name) {
+        this.texture = gl.createTexture();
+        this.texture.image = new Image();
+        var fj = this; //hacking around callbacks
+        this.texture.image.onload = function () {
+            handleLoadedTexture(fj.texture)
+        }
+
+        this.texture.image.src = name;
+    };
+
+    this.update = function(time) {
+        var i;
+        //update current particles
+        for(i = 0 ; i &lt; this.liveParticles ; ++i) {
+            this.particles[i].energy -= time;
+
+            var path = vec3.create([0, 0, 0]);
+            vec3.scale(this.particles[i].vel, time, path);
+            vec3.add(this.particles[i].pos, path);
+
+            this.particles[i].color = ColorLERP(this.startColor, this.endColor, (1.0 - this.particles[i].energy/this.startEnergy));
+
+            if(this.particles[i].energy &lt; 0) {
+                //swap dead with live particles;
+                var temp = this.particles[i];
+                this.particles[i] = this.particles[this.liveParticles-1];
+                this.particles[this.liveParticles - 1] = temp;
+                --this.liveParticles;
+            }
+        }
+
+        //spawn new particles
+        this.accumulator += time;
+        while(this.accumulator &gt; this.cooldown) {
+            this.accumulator -= this.cooldown;
+            for(i = 0 ; i &lt; this.particlesPerFrame ; ++i) {
+                this.emitParticle();
+            }
+        }
+
+    };
+
+    this.draw = function() {
+        var i;
+        for(i = 0 ; i &lt; this.liveParticles ; ++i) {
+            this.drawParticle(this.particles[i]);
+        }
+    };
+
+    //worker functions
+    this.emitParticle = function() {
+        if(this.liveParticles &lt; this.maxParticles) {
+            var i = this.liveParticles;
+            this.particles[i].pos = vec3.create(this.pos);
+            this.particles[i].vel = vec3.create([Math.random()-0.5, Math.random()-0.5, 0]); //TODO randomize
+            vec3.normalize(this.particles[i].vel);
+            vec3.scale(this.particles[i].vel, this.startSpeed);
+            this.particles[i].energy = this.startEnergy;
+            this.particles[i].color = CloneColor(this.startColor);
+            ++this.liveParticles;
+
+        }
+    };
+
+    this.drawParticle = function(particle) {
+        mvPushMatrix();
+        //translate to proper location
+
+        mat4.translate(mvMatrix, particle.pos);
+        mat4.scale(mvMatrix, this.size);
+
+        gl.uniform4f(shaderProgram.colorUniform, particle.color.r, particle.color.g, particle.color.b, particle.color.a);
+
+        //draw
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        gl.uniform1i(shaderProgram.samplerUniform, 0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexTextureCoordBuffer);
+        gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, particleVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexPositionBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, particleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        setMatrixUniforms();
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, particleVertexPositionBuffer.numItems);
+
+        mvPopMatrix();
+    };
+
+};
+
+</pre>
+
+
+
+<pre class="example">function ColorLERP(color1, color2, p) {
+    var red = color1.r * (1-p) + color2.r*p;
+    var green = color1.g * (1-p) + color2.g*p;
+    var blue = color1.b * (1-p) + color2.b*p;
+    var alpha = color1.a * (1-p) + color2.a*p;
+    return { r : red, g : green, b : blue, a : alpha};
+}
+
+function CloneColor(color) {
+    return { r : color.r, g : color.g, b : color.b, a : color.a };
+}
+
+</pre>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Adv. emiter</h2>
+<div class="outline-text-2" id="text-4">
+
+
+
+
+
+<pre class="example">function Particle() {
+    this.pos = vec3.create();
+    this.vel = vec3.create();
+
+    this.energy = 0.0;
+    this.initialEnergy = 0.0;
+
+    this.startColor = {r : 1.0, g : 1.0, b : 1.0};
+    this.endColor = {r : 1.0, g : 1.0, b : 1.0};
+
+    this.startSize = 1.0;
+    this.endSize = 1.0;
+
+    this.startRotation = 0.0;
+
+    this.mass = 1.0;
+}
+
+</pre>
+
+
+<p>
+FIXME move this somewhere else
+</p>
+
+
+<pre class="example">function LERP(a, b, p) {
+    return a * (1-p) + b * p;
+}
+</pre>
+
+
+
+<pre class="example">function Emitter() {
+
+    //default data
+    this.pos = vec3.create();
+    this.startSize = 1.0;
+    this.endSize = 1.0;
+
+    this.startEnergy = 3.0;
+    this.startSpeed = 2.0;
+
+    this.startColor = {r : 1.0, g : 1.0, b : 1.0, a : 1.0};
+    this.endColor = {r : 1.0, g : 1.0, b : 1.0, a : 0.0};
+
+    this.particles = [];
+    this.maxParticles = 1000;
+    this.liveParticles = 0;
+
+    this.particlesPerFrame = 10;
+
+    this.particleMass = 1.0;
+    this.startRotation = 0.0;
+
+    var ip;
+    for(ip = 0 ; ip &lt; this.maxParticles ; ++ip) {
+        this.particles[ip] = new Particle();
+    }
+
+    this.accumulator = 0.0;
+    this.cooldown = 0.25;
+
+    this.texture = null;
+
+    //user-configurable particle initialization
+    this.getParticlesPerFrame = function() {
+        return this.particlesPerFrame;
+    }
+
+    this.getParticleStartPosition = function() {
+        return vec3.create(this.pos);
+    }
+
+    this.getParticleStartEnergy = function() {
+        return this.startEnergy;
+    }
+
+    this.getParticleStartVelocity = function() {
+        return vec3.scale(vec3.normalize(vec3.create([Math.random() - 0.5, Math.random() - 0.5, 0])), this.startSpeed);
+    }
+
+    this.getParticleStartColor = function() {
+        return CloneColor(this.startColor);
+    }
+
+    this.getParticleEndColor = function() {
+        return CloneColor(this.endColor);
+    }
+
+    this.getParticleMass = function() {
+        return this.particleMass;
+    }
+
+    this.getParticleStartSize = function() {
+        return this.startSize;
+    }
+
+    this.getParticleEndSize = function() {
+        return this.endSize;
+    }
+
+    this.getParticleStartRotation = function() {
+        return this.startRotation;
+    }
+
+    //user-configurable particle update
+    this.computeParticleColor = function(particle) {
+        return ColorLERP(particle.startColor, particle.endColor, (1-particle.energy / particle.initialEnergy));
+    }
+
+    this.computeForces = function(particle) {
+        return vec3.create([0, 0, 0]);
+    }
+
+    this.computeParticleSize = function(particle) {
+        var scale = LERP(particle.startSize, particle.endSize, (1-particle.energy / particle.initialEnergy));
+        return vec3.create([scale, scale, scale]);
+    }
+
+    this.computeParticleRotation = function(particle) {
+        return 0.0;
+    }
+
+    //algorithms
+    this.setTexture = function(name) {
+        this.texture = gl.createTexture();
+        this.texture.image = new Image();
+        var fj = this; //hacking around callbacks
+        this.texture.image.onload = function () {
+            handleLoadedTexture(fj.texture)
+        }
+
+        this.texture.image.src = name;
+    };
+
+    //FIXME from this point down code is copypasted and needs adaptation
+    this.update = function(time) {
+        var i;
+        //update current particles
+        for(i = 0 ; i &lt; this.liveParticles ; ++i) {
+            this.particles[i].energy -= time;
+
+            var forces = this.computeForces(this.particles[i]);
+            vec3.scale(forces, time);
+            vec3.add(this.particles[i].vel, forces);
+
+            var path = vec3.create([0, 0, 0]);
+            vec3.scale(this.particles[i].vel, time/this.particles[i].mass, path);
+            vec3.add(this.particles[i].pos, path);
+
+            if(this.particles[i].energy &lt; 0) {
+                //swap dead with live particles;
+                var temp = this.particles[i];
+                this.particles[i] = this.particles[this.liveParticles-1];
+                this.particles[this.liveParticles - 1] = temp;
+                --this.liveParticles;
+            }
+        }
+
+        //spawn new particles
+        this.accumulator += time;
+        while(this.accumulator &gt; this.cooldown) {
+            this.accumulator -= this.cooldown;
+            var ppf = this.getParticlesPerFrame();
+            for(i = 0 ; i &lt; ppf ; ++i) {
+                this.emitParticle();
+            }
+        }
+
+    };
+
+    this.draw = function() {
+        var i;
+        for(i = 0 ; i &lt; this.liveParticles ; ++i) {
+            this.drawParticle(this.particles[i]);
+        }
+    };
+
+    this.emitParticle = function() {
+        if(this.liveParticles &lt; this.maxParticles) {
+            var i = this.liveParticles;
+            this.particles[i].pos = this.getParticleStartPosition();
+            this.particles[i].vel = this.getParticleStartVelocity();
+
+            this.particles[i].energy = this.particles[i].initialEnergy = this.getParticleStartEnergy();
+
+            this.particles[i].startColor = this.getParticleStartColor();
+            this.particles[i].endColor = this.getParticleEndColor();
+
+            this.particles[i].startSize = this.getParticleStartSize();
+            this.particles[i].endSize = this.getParticleEndSize();
+
+            this.particles[i].startRotation = this.getParticleStartRotation();
+
+            this.particles[i].mass = this.getParticleMass();
+
+            ++this.liveParticles;
+
+        }
+    };
+
+    this.drawParticle = function(particle) {
+        mvPushMatrix();
+        //translate to proper location
+
+        mat4.translate(mvMatrix, particle.pos);
+        mat4.rotateZ(mvMatrix, this.computeParticleRotation(particle));
+        mat4.scale(mvMatrix, this.computeParticleSize(particle));
+
+        var color = this.computeParticleColor(particle);
+        gl.uniform4f(shaderProgram.colorUniform, color.r, color.g, color.b, color.a);
+
+        //draw
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        gl.uniform1i(shaderProgram.samplerUniform, 0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexTextureCoordBuffer);
+        gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, particleVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexPositionBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, particleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        setMatrixUniforms();
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, particleVertexPositionBuffer.numItems);
+
+        mvPopMatrix();
+    };
+
+}
+
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Tangled files</h2>
+<div class="outline-text-2" id="text-5">
+
+
+</div>
+
+<div id="outline-container-5-1" class="outline-3">
+<h3 id="sec-5-1"><span class="section-number-3">5.1</span> Skeleton</h3>
+<div class="outline-text-3" id="text-5-1">
+
+
+
+
+<pre class="example">&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Szkielet - WebGL&lt;/title&gt;
+    &lt;&lt;JSIncludes&gt;&gt;
+    &lt;&lt;WebGL-Skeleton&gt;&gt;
+  &lt;/head&gt;
+  &lt;body onload="webGLStart();"&gt;
+    &lt;&lt;Canvas&gt;&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+
+</div>
+
+<div id="outline-container-5-1-1" class="outline-4">
+<h4 id="sec-5-1-1"><span class="section-number-4">5.1.1</span> Substructure</h4>
+<div class="outline-text-4" id="text-5-1-1">
+
+
+
+
+<pre class="example">&lt;script type="text/javascript"&gt;
+  var gl;
+  &lt;&lt;WebGL-Matrices-Skeleton&gt;&gt;
+  &lt;&lt;WebGL-Canvas-Init&gt;&gt;
+  &lt;&lt;WebGL-Init-Skeleton&gt;&gt;
+  &lt;&lt;WebGL-DrawScene-Skeleton&gt;&gt;
+  &lt;&lt;WebGL-Tick-Skeleton&gt;&gt;
+&lt;/script&gt;
+</pre>
+
+
+
+<pre class="example">function webGLStart() {
+    var canvas = document.getElementById("webgl_canvas");
+    initGL(canvas);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+    tick();
+}
+</pre>
+
+
+
+<pre class="example">function tick() {
+    requestAnimFrame(tick);
+    drawScene();
+}
+</pre>
+
+
+
+<pre class="example">
+function drawScene() {
+    gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    gl.enable(gl.BLEND);
+
+    //tu kod rysujacy
+ }
+
+</pre>
+
+
+
+<pre class="example">var pMatrix = mat4.create();
+</pre>
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-5-2" class="outline-3">
+<h3 id="sec-5-2"><span class="section-number-3">5.2</span> Simple particle</h3>
+<div class="outline-text-3" id="text-5-2">
+
+
+
+
+
+<pre class="example">&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Pojedyncza cząsteczka&lt;/title&gt;
+    &lt;&lt;JSIncludes&gt;&gt;
+    &lt;&lt;FragmentShader&gt;&gt;
+    &lt;&lt;VertexShader&gt;&gt;
+    &lt;&lt;WebGL-Simple-Particle&gt;&gt;
+  &lt;/head&gt;
+  &lt;body onload="webGLStart();"&gt;
+    &lt;&lt;Canvas&gt;&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+
+</pre>
+
+
+
+</div>
+
+<div id="outline-container-5-2-1" class="outline-4">
+<h4 id="sec-5-2-1"><span class="section-number-4">5.2.1</span> Substructure</h4>
+<div class="outline-text-4" id="text-5-2-1">
+
+
+
+
+
+<pre class="example">&lt;script type="text/javascript"&gt;
+  &lt;&lt;WebGL-Matrix-Code&gt;&gt;
+  &lt;&lt;WebGL-Canvas-Init&gt;&gt;
+  &lt;&lt;WebGL-Shaders-Init&gt;&gt;
+  &lt;&lt;WebGL-Buffers-Init&gt;&gt;
+  &lt;&lt;WebGL-Textures-Load&gt;&gt;
+  &lt;&lt;WebGL-Texture-Init-Simple-Particle&gt;&gt;
+
+  &lt;&lt;SimpleParticleObject&gt;&gt;
+  &lt;&lt;SimpleParticleDrawing&gt;&gt;
+
+  &lt;&lt;WebGL-World-Init-Simple-Particle&gt;&gt;
+  &lt;&lt;WebGL-Init-Simple-Particle&gt;&gt;
+
+  &lt;&lt;WebGL-DrawScene-Simple-Particle&gt;&gt;
+  &lt;&lt;WebGL-Tick-Simple-Particle&gt;&gt;
+&lt;/script&gt;
+</pre>
+
+
+
+<pre class="example">var pMatrix = mat4.create();
+</pre>
+
+
+
+<pre class="example">function webGLStart() {
+    var canvas = document.getElementById("webgl_canvas");
+    initGL(canvas);
+    initShaders();
+    initBuffers();
+    initTexture();
+    initWorld();
+
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+    tick();
+}
+</pre>
+
+
+
+<pre class="example">var testParticle;
+
+function initWorld() {
+    testParticle = new Particle();
+    testParticle.pos = vec3.create([1, 1, -5]);
+}
+</pre>
+
+
+
+<pre class="example">function tick() {
+    requestAnimFrame(tick);
+    drawScene();
+}
+</pre>
+
+
+
+<pre class="example">
+function drawScene() {
+    gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    gl.enable(gl.BLEND);
+
+    mat4.identity(mvMatrix);
+    //tu kod rysujacy
+
+    drawParticle(testParticle);
+ }
+
+</pre>
+
+
+
+
+<pre class="example">var particleTexture;
+
+function initTexture() {
+    particleTexture = gl.createTexture();
+    particleTexture.image = new Image();
+    particleTexture.image.onload = function () {
+        handleLoadedTexture(particleTexture)
+    }
+
+    particleTexture.image.src = "data/star.gif";
+}
+</pre>
+
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-5-3" class="outline-3">
+<h3 id="sec-5-3"><span class="section-number-3">5.3</span> Simple emitter</h3>
+<div class="outline-text-3" id="text-5-3">
+
+
+
+
+
+<pre class="example">&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Emiter cząstek&lt;/title&gt;
+    &lt;&lt;JSIncludes&gt;&gt;
+    &lt;&lt;FragmentShader&gt;&gt;
+    &lt;&lt;VertexShader&gt;&gt;
+
+    &lt;&lt;WebGL-Simple-Emitter&gt;&gt;
+  &lt;/head&gt;
+  &lt;body onload="webGLStart();"&gt;
+    &lt;&lt;Canvas&gt;&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+
+</pre>
+
+
+
+</div>
+
+<div id="outline-container-5-3-1" class="outline-4">
+<h4 id="sec-5-3-1"><span class="section-number-4">5.3.1</span> Substructure</h4>
+<div class="outline-text-4" id="text-5-3-1">
+
+
+
+
+
+<pre class="example">&lt;script type="text/javascript"&gt;
+  &lt;&lt;WebGL-Matrix-Code&gt;&gt;
+  &lt;&lt;WebGL-Canvas-Init&gt;&gt;
+  &lt;&lt;WebGL-Shaders-Init&gt;&gt;
+  &lt;&lt;WebGL-Buffers-Init&gt;&gt;
+  &lt;&lt;WebGL-Textures-Load&gt;&gt;
+  &lt;&lt;WebGL-Texture-Init-Simple-Emitter&gt;&gt;
+
+  &lt;&lt;ColorUtils&gt;&gt;
+
+  &lt;&lt;SimpleParticleObject&gt;&gt;
+  &lt;&lt;SimpleEmitterObject&gt;&gt;
+
+  &lt;&lt;WebGL-World-Init-Advanced-Emitter&gt;&gt;
+  &lt;&lt;WebGL-Init-Advanced-Emitter&gt;&gt;
+  &lt;&lt;Update-World-Advanced-Emitter&gt;&gt;
+  &lt;&lt;WebGL-DrawScene-Advanced-Emitter&gt;&gt;
+  &lt;&lt;WebGL-Animate-VariableStep&gt;&gt;
+  &lt;&lt;WebGL-Tick-Advanced-Emitter&gt;&gt;
+&lt;/script&gt;
+</pre>
+
+
+
+<pre class="example">function webGLStart() {
+    var canvas = document.getElementById("webgl_canvas");
+    initGL(canvas);
+    initShaders();
+    initBuffers();
+    initWorld();
+
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+    tick();
+}
+</pre>
+
+
+
+
+<pre class="example">var testEmitter;
+var testEmitter2;
+
+function initWorld() {
+    testEmitter = new Emitter();
+    testEmitter.pos = vec3.create([1, 1, -8]);
+    testEmitter.size = vec3.create([0.5, 0.5, 1.0]);
+    testEmitter.setTexture("data/star.gif");
+    testEmitter.startColor = { r : 1.0, g : 0.0, b : 1.0, a : 1.0};
+    testEmitter.endColor = { r : 0.0, g : 1.0, b : 0.0, a : 0.0};
+
+
+    testEmitter2 = new Emitter();
+    testEmitter2.pos = vec3.create([-1, -1, -9]);
+    testEmitter2.size = vec3.create([0.25, 0.25, 1.0]);
+    testEmitter2.startEnergy = 5.0;
+    testEmitter2.cooldown = 1.0;
+    testEmitter2.startVelocity = vec3.create([1.0, 1.0, 0.0]);
+    testEmitter2.setTexture("data/flower.png");
+}
+
+</pre>
+
+
+
+
+<pre class="example">function tick() {
+    requestAnimFrame(tick);
+    animate();
+    drawScene();
+}
+</pre>
+
+
+
+<pre class="example">
+function drawScene() {
+    gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    gl.enable(gl.BLEND);
+
+    mat4.identity(mvMatrix);
+    //tu kod rysujacy
+
+    testEmitter.draw();
+    testEmitter2.draw();
+ }
+
+</pre>
+
+
+
+<pre class="example">function UpdateWorld(dt) {
+    testEmitter.update(dt);
+    testEmitter2.update(dt);
+}
+</pre>
+
+
+
+
+<p>
+To wszystko idzie do przerycia; stanie się elementem emitera.
+</p>
+
+
+<pre class="example">
+
+</pre>
+
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-5-4" class="outline-3">
+<h3 id="sec-5-4"><span class="section-number-3">5.4</span> Advanced Emitter</h3>
+<div class="outline-text-3" id="text-5-4">
+
+
+
+
+
+<pre class="example">&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Zaawansowany emiter cząstek&lt;/title&gt;
+    &lt;&lt;JSIncludes&gt;&gt;
+    &lt;&lt;FragmentShader&gt;&gt;
+    &lt;&lt;VertexShader&gt;&gt;
+
+    &lt;&lt;WebGL-Advanced-Emitter&gt;&gt;
+  &lt;/head&gt;
+  &lt;body onload="webGLStart();"&gt;
+    &lt;&lt;Canvas&gt;&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+
+</pre>
+
+
+
+
+</div>
+
+<div id="outline-container-5-4-1" class="outline-4">
+<h4 id="sec-5-4-1"><span class="section-number-4">5.4.1</span> Substructure</h4>
+<div class="outline-text-4" id="text-5-4-1">
+
+
+
+
+
+<pre class="example">&lt;script type="text/javascript"&gt;
+  &lt;&lt;WebGL-Matrix-Code&gt;&gt;
+  &lt;&lt;WebGL-Canvas-Init&gt;&gt;
+  &lt;&lt;WebGL-Shaders-Init&gt;&gt;
+  &lt;&lt;WebGL-Buffers-Init&gt;&gt;
+  &lt;&lt;WebGL-Textures-Load&gt;&gt;
+  &lt;&lt;WebGL-Texture-Init-Advanced-Emitter&gt;&gt;
+
+  &lt;&lt;ColorUtils&gt;&gt;
+
+  &lt;&lt;AdvancedParticleObject&gt;&gt;
+
+  //FIXME!
+  &lt;&lt;Utils&gt;&gt;
+  &lt;&lt;AdvancedEmitterObject&gt;&gt;
+
+  &lt;&lt;WebGL-World-Init-Advanced-Emitter&gt;&gt;
+  &lt;&lt;WebGL-Init-Advanced-Emitter&gt;&gt;
+  &lt;&lt;Update-World-Advanced-Emitter&gt;&gt;
+  &lt;&lt;WebGL-DrawScene-Advanced-Emitter&gt;&gt;
+  &lt;&lt;WebGL-Animate-VariableStep&gt;&gt;
+  &lt;&lt;WebGL-Tick-Advanced-Emitter&gt;&gt;
+&lt;/script&gt;
+</pre>
+
+
+
+
+<pre class="example">&lt;&lt;WebGL-Init-Simple-Emitter&gt;&gt;
+</pre>
+
+
+
+
+<pre class="example">var testEmitter;
+var testEmitter2;
+
+function initWorld() {
+    testEmitter = new Emitter();
+    testEmitter.pos = vec3.create([1, 1, -8]);
+    testEmitter.startSize = 0.5;
+    testEmitter.endSize = 0.5;
+    testEmitter.setTexture("data/star.gif");
+    testEmitter.startColor = { r : 1.0, g : 0.0, b : 1.0, a : 1.0};
+    testEmitter.endColor = { r : 0.0, g : 1.0, b : 0.0, a : 0.0};
+
+
+    testEmitter2 = new Emitter();
+    testEmitter2.pos = vec3.create([-1, -1, -9]);
+    testEmitter2.startSize = 0.25;
+    testEmitter2.endSize = 0.25;
+    testEmitter2.startEnergy = 5.0;
+    testEmitter2.cooldown = 1.0;
+    testEmitter2.startVelocity = vec3.create([1.0, 1.0, 0.0]);
+    testEmitter2.setTexture("data/flower.png");
+}
+
+</pre>
+
+
+
+<pre class="example">&lt;&lt;WebGL-Tick-Simple-Emitter&gt;&gt;
+</pre>
+
+
+
+<pre class="example">
+function drawScene() {
+    gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    gl.enable(gl.BLEND);
+
+    mat4.identity(mvMatrix);
+    //tu kod rysujacy
+
+    testEmitter.draw();
+    testEmitter2.draw();
+ }
+
+</pre>
+
+
+
+<pre class="example">function UpdateWorld(dt) {
+    testEmitter.update(dt);
+    testEmitter2.update(dt);
+}
+</pre>
+
+
+
+</div>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> <i>b</i></h2>
+<div class="outline-text-2" id="text-6">
+
+
+
+</div>
+
+<div id="outline-container-6-1" class="outline-3">
+<h3 id="sec-6-1"><span class="section-number-3">6.1</span> Links to use in the tutorial</h3>
+<div class="outline-text-3" id="text-6-1">
+
+
+</div>
+
+<div id="outline-container-6-1-1" class="outline-4">
+<h4 id="sec-6-1-1"><span class="section-number-4">6.1.1</span> <a href="http://nehe.gamedev.net/tutorial/particle_engine_using_triangle_strips/21001/">http://nehe.gamedev.net/tutorial/particle_engine_using_triangle_strips/21001/</a></h4>
+<div class="outline-text-4" id="text-6-1-1">
+
+</div>
+
+</div>
+
+<div id="outline-container-6-1-2" class="outline-4">
+<h4 id="sec-6-1-2"><span class="section-number-4">6.1.2</span> <a href="http://webgl-tuts.webninja.eu/#tutorials-tutorial10">http://webgl-tuts.webninja.eu/#tutorials-tutorial10</a>- (!!??!)</h4>
+<div class="outline-text-4" id="text-6-1-2">
+
+</div>
+
+</div>
+
+<div id="outline-container-6-1-3" class="outline-4">
+<h4 id="sec-6-1-3"><span class="section-number-4">6.1.3</span> <a href="http://learningwebgl.com/blog/?p=1008">http://learningwebgl.com/blog/?p=1008</a></h4>
+<div class="outline-text-4" id="text-6-1-3">
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-6-2" class="outline-3">
+<h3 id="sec-6-2"><span class="section-number-3">6.2</span> Unassigned code</h3>
+<div class="outline-text-3" id="text-6-2">
+
+
+
+
+<pre class="example">&lt;script type="text/javascript" src="js/gl-matrix-min.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="js/webgl-utils.js"&gt;&lt;/script&gt;
+</pre>
+
+
+
+<pre class="example">&lt;canvas id="webgl_canvas" style="border: none;" width="640" height="480"&gt;&lt;/canvas&gt;
+</pre>
+
+
+
+
+
+<pre class="example">function initGL(canvas) {
+    try {
+        gl = canvas.getContext("experimental-webgl");
+        gl.viewportWidth = canvas.width;
+        gl.viewportHeight = canvas.height;
+    } catch (e) {
+    }
+    if (!gl) {
+        alert("Could not initialise WebGL, sorry :-(");
+    }
+}
+</pre>
+
+
+
+<pre class="example">
+function getShader(gl, id) {
+    var shaderScript = document.getElementById(id);
+    if (!shaderScript) {
+        return null;
+    }
+
+    var str = "";
+    var k = shaderScript.firstChild;
+    while (k) {
+        if (k.nodeType == 3) {
+            str += k.textContent;
+        }
+        k = k.nextSibling;
+    }
+
+    var shader;
+    if (shaderScript.type == "x-shader/x-fragment") {
+        shader = gl.createShader(gl.FRAGMENT_SHADER);
+    } else if (shaderScript.type == "x-shader/x-vertex") {
+        shader = gl.createShader(gl.VERTEX_SHADER);
+    } else {
+        return null;
+    }
+
+    gl.shaderSource(shader, str);
+    gl.compileShader(shader);
+
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        alert(gl.getShaderInfoLog(shader));
+        return null;
+    }
+
+    return shader;
+}
+
+var shaderProgram;
+
+function initShaders() {
+    var fragmentShader = getShader(gl, "shader-fs");
+    var vertexShader = getShader(gl, "shader-vs");
+
+    shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        alert("Could not initialise shaders");
+    }
+
+    gl.useProgram(shaderProgram);
+
+    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+
+    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+
+    shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+    shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+    shaderProgram.colorUniform = gl.getUniformLocation(shaderProgram, "uColor");
+}
+
+</pre>
+
+
+
+<pre class="example">var mvMatrix = mat4.create();
+var mvMatrixStack = [];
+var pMatrix = mat4.create();
+
+function mvPushMatrix() {
+    var copy = mat4.create();
+    mat4.set(mvMatrix, copy);
+    mvMatrixStack.push(copy);
+}
+
+function mvPopMatrix() {
+    if (mvMatrixStack.length == 0) {
+        throw "Invalid popMatrix!";
+    }
+    mvMatrix = mvMatrixStack.pop();
+}
+
+
+function setMatrixUniforms() {
+    gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
+    gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+}
+
+</pre>
+
+
+
+<pre class="example">function handleLoadedTexture(texture) {
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+    gl.bindTexture(gl.TEXTURE_2D, null);
+}
+
+</pre>
+
+
+
+
+<pre class="example">var particleVertexPositionBuffer;
+var particleVertexTextureCoordBuffer;
+
+function initBuffers() {
+    particleVertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexPositionBuffer);
+    vertices = [
+        -1.0, -1.0,  0.0,
+         1.0, -1.0,  0.0,
+        -1.0,  1.0,  0.0,
+         1.0,  1.0,  0.0
+    ];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    particleVertexPositionBuffer.itemSize = 3;
+    particleVertexPositionBuffer.numItems = 4;
+
+    particleVertexTextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexTextureCoordBuffer);
+    var textureCoords = [
+        0.0, 0.0,
+        1.0, 0.0,
+        0.0, 1.0,
+        1.0, 1.0
+    ];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
+    particleVertexTextureCoordBuffer.itemSize = 2;
+    particleVertexTextureCoordBuffer.numItems = 4;
+}
+
+</pre>
+
+
+
+<pre class="example">var lastTime = 0;
+var dtAccum = 0;
+var updateCooldown = 1/30.0; //30FPS
+
+function animate() {
+    var timeNow = new Date().getTime();
+    if (lastTime != 0) {
+        var elapsed = (timeNow - lastTime)/1000.0;
+        dtAccum += elapsed;
+        if(dtAccum &gt; 1.0) {
+            dtAccum = 1.0;
+        }
+        while(dtAccum &gt; updateCooldown) {
+            UpdateWorld(updateCooldown);
+            dtAccum -= updateCooldown;
+        }
+    }
+    lastTime = timeNow;
+
+}
+
+</pre>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> TO DO</h2>
+<div class="outline-text-2" id="text-7">
+
+
+</div>
+
+<div id="outline-container-7-1" class="outline-3">
+<h3 id="sec-7-1"><span class="section-number-3">7.1</span> <span class="done DONE">DONE</span> Empty canvas</h3>
+<div class="outline-text-3" id="text-7-1">
+
+</div>
+
+</div>
+
+<div id="outline-container-7-2" class="outline-3">
+<h3 id="sec-7-2"><span class="section-number-3">7.2</span> <span class="done DONE">DONE</span> Particle code + display</h3>
+<div class="outline-text-3" id="text-7-2">
+
+
+</div>
+
+<div id="outline-container-7-2-1" class="outline-4">
+<h4 id="sec-7-2-1"><span class="section-number-4">7.2.1</span> <span class="todo TODO">TODO</span> Press a button/link to change particle color ;).</h4>
+<div class="outline-text-4" id="text-7-2-1">
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-7-3" class="outline-3">
+<h3 id="sec-7-3"><span class="section-number-3">7.3</span> <span class="done DONE">DONE</span> Particle emitter code + display</h3>
+<div class="outline-text-3" id="text-7-3">
+
+<ul>
+<li>demo a simple (magic) explosion
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-7-4" class="outline-3">
+<h3 id="sec-7-4"><span class="section-number-3">7.4</span> <span class="todo TODO">TODO</span> Improved emitter (physics) + display</h3>
+<div class="outline-text-3" id="text-7-4">
+
+<ul>
+<li>demo snowe
+</li>
+<li>demo smoke
+</li>
+<li>demo jet
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-7-5" class="outline-3">
+<h3 id="sec-7-5"><span class="section-number-3">7.5</span> <span class="todo TODO">TODO</span> Bonus</h3>
+<div class="outline-text-3" id="text-7-5">
+
+<ul>
+<li>particles that follow path
+</li>
+<li>demo &lt;3 :).
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2012-09-27 18:24:23 Środkowoeuropejski czas letni</p>
+<p class="author">Author: </p>
+<p class="creator">Org version 7.8.11 with Emacs version 24</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
+</div>
+</body>
+</html>
