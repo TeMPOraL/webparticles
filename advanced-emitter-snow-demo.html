@@ -432,15 +432,8 @@
           testEmitter.startColor = { r : 0.0, g : 0.0, b : 1.0, a : 1.0};
           testEmitter.endColor = { r : 0.0, g : 1.0, b : 0.0, a : 0.0};
       
-      
           testEmitter2 = new Emitter();
-          testEmitter2.pos = vec3.create([-1, -1, -9]);
-          testEmitter2.startSize = 0.25;
-          testEmitter2.endSize = 0.25;
-          testEmitter2.startEnergy = 5.0;
-          testEmitter2.cooldown = 1.0;
-          testEmitter2.startVelocity = vec3.create([1.0, 1.0, 0.0]);
-          testEmitter2.setTexture("data/flower.png");
+          testEmitter2.particlesPerFrame = 0;
       }
       
       function webGLStart() {

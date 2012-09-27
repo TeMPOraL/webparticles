@@ -920,6 +920,35 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
   }
 #+end_src
 
+** Removing unused emitter for adv. demos
+
+#+name: WebGL-DrawScene-Advanced-Emitter-Demos
+#+begin_src javascript
+ 
+    function drawScene() {
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+ 
+        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+ 
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+        gl.enable(gl.BLEND);
+
+        mat4.identity(mvMatrix);
+        //tu kod rysujacy
+
+        testEmitter.draw();
+     }
+
+#+end_src
+
+#+name: Update-World-Advanced-Emitter-Demos
+#+begin_src javascript
+  function UpdateWorld(dt) {
+      testEmitter.update(dt);
+  }
+#+end_src
+
 
 ** Advanced Emitter - Jet Demo
 
@@ -963,8 +992,8 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
 
     <<WebGL-World-Init-Advanced-Emitter-Jet>>
     <<WebGL-Init-Advanced-Emitter>>
-    <<Update-World-Advanced-Emitter>>
-    <<WebGL-DrawScene-Advanced-Emitter>>
+    <<Update-World-Advanced-Emitter-Demos>>
+    <<WebGL-DrawScene-Advanced-Emitter-Demos>>
     <<WebGL-Animate-VariableStep>>
     <<WebGL-Tick-Advanced-Emitter>>
   </script>
@@ -973,26 +1002,21 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
 #+name: WebGL-World-Init-Advanced-Emitter-Jet
 #+begin_src javascript
   var testEmitter;
-  var testEmitter2;
-  
+
   function initWorld() {
       testEmitter = new Emitter();
       testEmitter.pos = vec3.create([1, 1, -8]);
-      testEmitter.startSize = 0.5;
-      testEmitter.endSize = 0.5;
-      testEmitter.setTexture("data/star.gif");
-      testEmitter.startColor = { r : 0.0, g : 0.0, b : 1.0, a : 1.0};
-      testEmitter.endColor = { r : 0.0, g : 1.0, b : 0.0, a : 0.0};
+      testEmitter.startSize = 0.25;
+      testEmitter.endSize = 0.05;
+      testEmitter.setTexture("data/smoke.jpg");
+      testEmitter.startColor = { r : 1, g : 69/255, b : 0.27, a : 0.5};
+      testEmitter.endColor = { r : 0.7, g : 0.7, b : 0.7, a : 0.7};
+      testEmitter.particlesPerFrame = 2;
+      testEmitter.cooldown = 0.01;
   
-  
-      testEmitter2 = new Emitter();
-      testEmitter2.pos = vec3.create([-1, -1, -9]);
-      testEmitter2.startSize = 0.25;
-      testEmitter2.endSize = 0.25;
-      testEmitter2.startEnergy = 5.0;
-      testEmitter2.cooldown = 1.0;
-      testEmitter2.startVelocity = vec3.create([1.0, 1.0, 0.0]);
-      testEmitter2.setTexture("data/flower.png");
+      testEmitter.getParticleStartVelocity = function () {
+          return vec3.create([-2, Math.random() - 0.5, 0]);
+      };
   }
   
 #+end_src
@@ -1040,8 +1064,8 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
 
     <<WebGL-World-Init-Advanced-Emitter-Smoke>>
     <<WebGL-Init-Advanced-Emitter>>
-    <<Update-World-Advanced-Emitter>>
-    <<WebGL-DrawScene-Advanced-Emitter>>
+    <<Update-World-Advanced-Emitter-Demos>>
+    <<WebGL-DrawScene-Advanced-Emitter-Demos>>
     <<WebGL-Animate-VariableStep>>
     <<WebGL-Tick-Advanced-Emitter>>
   </script>
@@ -1050,21 +1074,22 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
 #+name: WebGL-World-Init-Advanced-Emitter-Smoke
 #+begin_src javascript
   var testEmitter;
-  var testEmitter2;
   
   function initWorld() {
       testEmitter = new Emitter();
-      testEmitter.pos = vec3.create([1, 1, -8]);
-      testEmitter.startSize = 0.5;
-      testEmitter.endSize = 0.5;
-      testEmitter.setTexture("data/star.gif");
-      testEmitter.startColor = { r : 0.0, g : 0.0, b : 1.0, a : 1.0};
-      testEmitter.endColor = { r : 0.0, g : 1.0, b : 0.0, a : 0.0};
+      testEmitter.pos = vec3.create([-1, -1, -8]);
+      testEmitter.startSize = 0.1;
+      testEmitter.endSize = 1;
+      testEmitter.setTexture("data/smoke.jpg");
+      testEmitter.startColor = { r : 0.2, g : 0.2, b : 0.2, a : 1 };
+      testEmitter.endColor = { r : 0.0, g : 0.0, b : 0.0, a : 0.5 };
+
+      testEmitter.cooldown = 0.03;
+      testEmitter.particlesPerFrame = 1;
   
-  
-      testEmitter2 = new Emitter();
-      testEmitter2.particlesPerFrame = 0;
-  }
+      testEmitter.getParticleStartVelocity = function() { return vec3.create([1, Math.random()/2, 0]); };
+      testEmitter.getParticleStartEnergy = function () { return this.startEnergy + Math.random(); };    
+    }
   
 #+end_src
 
@@ -1131,15 +1156,8 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
       testEmitter.startColor = { r : 0.0, g : 0.0, b : 1.0, a : 1.0};
       testEmitter.endColor = { r : 0.0, g : 1.0, b : 0.0, a : 0.0};
   
-  
       testEmitter2 = new Emitter();
-      testEmitter2.pos = vec3.create([-1, -1, -9]);
-      testEmitter2.startSize = 0.25;
-      testEmitter2.endSize = 0.25;
-      testEmitter2.startEnergy = 5.0;
-      testEmitter2.cooldown = 1.0;
-      testEmitter2.startVelocity = vec3.create([1.0, 1.0, 0.0]);
-      testEmitter2.setTexture("data/flower.png");
+      testEmitter2.particlesPerFrame = 0;
   }
   
 #+end_src
