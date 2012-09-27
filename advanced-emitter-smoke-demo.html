@@ -300,7 +300,7 @@
           }
       
           this.computeParticleRotation = function(particle) {
-              return 0.0;
+              return particle.startRotation;
           }
       
           //algorithms
@@ -420,24 +420,25 @@
       
         
     
-      var testEmitter;
+        var testEmitter;
+        
+        function initWorld() {
+            testEmitter = new Emitter();
+            testEmitter.pos = vec3.create([-1, -1, -8]);
+            testEmitter.startSize = 0.1;
+            testEmitter.endSize = 1;
+            testEmitter.setTexture("data/smoke.jpg");
+            testEmitter.startColor = { r : 0.2, g : 0.2, b : 0.2, a : 1 };
+            testEmitter.endColor = { r : 0.0, g : 0.0, b : 0.0, a : 0.5 };
       
-      function initWorld() {
-          testEmitter = new Emitter();
-          testEmitter.pos = vec3.create([-1, -1, -8]);
-          testEmitter.startSize = 0.1;
-          testEmitter.endSize = 1;
-          testEmitter.setTexture("data/smoke.jpg");
-          testEmitter.startColor = { r : 0.2, g : 0.2, b : 0.2, a : 1 };
-          testEmitter.endColor = { r : 0.0, g : 0.0, b : 0.0, a : 0.5 };
-      
-          testEmitter.cooldown = 0.03;
-          testEmitter.particlesPerFrame = 1;
-      
-          testEmitter.getParticleStartVelocity = function() { return vec3.create([1, Math.random()/2, 0]); };
-          testEmitter.getParticleStartEnergy = function () { return this.startEnergy + Math.random(); };    
-        }
-      
+            testEmitter.cooldown = 0.03;
+            testEmitter.particlesPerFrame = 1;
+        
+            
+      testEmitter.getParticleStartVelocity = function() { return vec3.create([1, Math.random()/2, 0]); };
+            testEmitter.getParticleStartEnergy = function () { return this.startEnergy + Math.random(); };    
+          }
+        
       function webGLStart() {
           var canvas = document.getElementById("webgl_canvas");
           initGL(canvas);

@@ -359,7 +359,7 @@ FIXME move this somewhere else
       }
   
       this.computeParticleRotation = function(particle) {
-          return 0.0;
+          return particle.startRotation;
       }
   
       //algorithms
@@ -1087,7 +1087,8 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
       testEmitter.cooldown = 0.03;
       testEmitter.particlesPerFrame = 1;
   
-      testEmitter.getParticleStartVelocity = function() { return vec3.create([1, Math.random()/2, 0]); };
+      
+testEmitter.getParticleStartVelocity = function() { return vec3.create([1, Math.random()/2, 0]); };
       testEmitter.getParticleStartEnergy = function () { return this.startEnergy + Math.random(); };    
     }
   
@@ -1135,8 +1136,8 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
 
     <<WebGL-World-Init-Advanced-Emitter-Snow>>
     <<WebGL-Init-Advanced-Emitter>>
-    <<Update-World-Advanced-Emitter>>
-    <<WebGL-DrawScene-Advanced-Emitter>>
+    <<Update-World-Advanced-Emitter-Demos>>
+    <<WebGL-DrawScene-Advanced-Emitter-Demos>>
     <<WebGL-Animate-VariableStep>>
     <<WebGL-Tick-Advanced-Emitter>>
   </script>
@@ -1147,19 +1148,35 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
   var testEmitter;
   var testEmitter2;
   
-  function initWorld() {
-      testEmitter = new Emitter();
-      testEmitter.pos = vec3.create([1, 1, -8]);
-      testEmitter.startSize = 0.5;
-      testEmitter.endSize = 0.5;
-      testEmitter.setTexture("data/star.gif");
-      testEmitter.startColor = { r : 0.0, g : 0.0, b : 1.0, a : 1.0};
-      testEmitter.endColor = { r : 0.0, g : 1.0, b : 0.0, a : 0.0};
-  
-      testEmitter2 = new Emitter();
-      testEmitter2.particlesPerFrame = 0;
+  function randomizeWindDirection() {
+      (function(val) {
+          testEmitter.computeForces = function(particle) {
+              return vec3.create([val, 0, 0])
+          };
+          setTimeout(randomizeWindDirection, 1500);
+      })((Math.random() - 0.5)/2);
   }
   
+  function initWorld() {
+      testEmitter = new Emitter();
+      testEmitter.pos = vec3.create([0, 4, -8]);
+      testEmitter.startSize = 0.5;
+      testEmitter.endSize = 0.5;
+      testEmitter.setTexture("data/snowflake.png");
+      testEmitter.startColor = { r : 1, g : 1, b : 1, a : 1};
+      testEmitter.endColor = { r : 1, g : 1, b : 1, a : 1};
+  
+      testEmitter.cooldown = 0.3;
+      testEmitter.particlesPerFrame = 2;
+      testEmitter.startEnergy = 30;
+  
+      testEmitter.getParticleStartVelocity = function() { return vec3.create([Math.random()/2 - 0.25, -1, 0]); };
+      testEmitter.getParticleStartRotation = function() { return Math.random() * 360; };
+  
+      testEmitter.getParticleStartPosition = function() { return vec3.create([this.pos[0]  + (Math.random() * 10 - 5), this.pos[1], this.pos[2]]); };
+  
+      randomizeWindDirection();
+  }
 #+end_src
 
 
