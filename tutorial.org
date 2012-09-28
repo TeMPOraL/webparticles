@@ -4,6 +4,67 @@
 Using Org-Babel to write a tutorial :).
 
 
+
+* Wstęp
+  Witaj w tutorialu poświęconemu systemom cząsteczkowym w
+  WebGL'u. Nauczysz się w nich zarówno podstaw tworzenia systemów
+  cząsteczkowych (ang. particle systems), jak i renderowania ich w
+  Internecie za pomocą technologii [[http://pl.wikipedia.org/wiki/WebGL][WebGL]]. Poradnik ten zakłada
+  podstawową wiedzę programistyczną w zakresie języka JavaScript oraz
+  biblioteki OpenGL dla dowolnego języka programowania.
+
+  Tutorial ten powstał w ramach przedmiotu "Systemy OpenGL i Direct3D"
+  na studiach II stopnia Informatyki Stosowanej na Akademii
+  Górniczo-Hutniczej w Krakowie.
+
+** WebGL
+   WebGL jest rozszerzeniem języka JavaScript dającym dostęp do API
+   dla grafiki 3D w przeglądarce. API to oparte jest na OpenGL ES
+   2.0. WebGL jest silnie związany z HTML5, w szczególności z
+   elementem =<canvas>=, wewnątrz którego można programowalnie rysować
+   grafikę 2D i 3D.
+
+   WebGL jest obecnie wspierany we wszystkich głównych przeglądarkach
+   poza Internet Explorer'em, do którego jednak istnieją nieoficjalne
+   rozszerzenia pozwalające tworzyć grafikę 3D.
+
+   Więcej informacji oraz tutoriale i przykłady pracy z WebGL'em
+   znajdziesz w materiałach zawartych na końcu niniejszego poradnika.
+
+** Systemy cząsteczkowe
+
+   Systemy cząsteczkowe to popularna metoda tworzenia efektów
+   specjalnych w grafice komputerowej. Polega ona na symulowaniu wielu
+   (dziesiątek, setek, tysięcy, czasem nawet milionów) malutkich
+   cząstek, rysowanych jako punkt lub mały obrazek. Taki rój
+   cząsteczek pozwala realistycznie rysować "rozmyte" zjawiska, takie
+   jak dym, ogień, eksplozje, deszcz, gwiazdy czy galaktyki.
+
+   http://upload.wikimedia.org/wikipedia/commons/2/28/Pi-explosion.jpg
+
+   Aby móc skutecznie symulować tysiące cząsteczek, każda z nich musi
+   być bardzo prosta. W praktyce, w grafice 3D, cząsteczki zwykle
+   rysowane są jako oteksturowane, kolorowe kwadraty stale zwrócone w
+   stronę ekranu ([[http://pl.wikipedia.org/wiki/Billboard_(grafika_komputerowa)][Billboarding]]). Cała złożoność kształtu cząsteczki
+   tkwi w teksturze, a złożoność zachowania w algorytmie opisującym
+   poruszanie się cząsteczek.
+
+   W niniejszym tutorialu omówimy dokładnie budowę rozszerzalnych
+   systemów cząsteczkowych, które mogą zostać wykorzystane w praktyce
+   do gier i aplikacji 3D uruchamianych w przeglądarce.
+
+
+* Przykłady
+  Tymczasowa lista linków do przykładów.
+  https://dl.dropbox.com/u/216352/stosowana/OpenGL/skeleton.html
+  https://dl.dropbox.com/u/216352/stosowana/OpenGL/simple-particle.html
+  https://dl.dropbox.com/u/216352/stosowana/OpenGL/simple-emitter.html
+  https://dl.dropbox.com/u/216352/stosowana/OpenGL/advanced-emitter.html
+  https://dl.dropbox.com/u/216352/stosowana/OpenGL/advanced-emitter-jet-demo.html
+  https://dl.dropbox.com/u/216352/stosowana/OpenGL/advanced-emitter-smoke-demo.html
+  https://dl.dropbox.com/u/216352/stosowana/OpenGL/advanced-emitter-snow-demo.html
+
+
 * WebGL - szkielet
 
 * Cząsteczki
@@ -950,6 +1011,109 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
 #+end_src
 
 
+** Tangle for Adv. demos
+#+name: JSIncludes-Tangle
+#+begin_src javascript
+  <<JSIncludes>>
+
+  <!-- Tangle -->
+  <script type="text/javascript" src="js/Tangle.js"></script>
+    
+  <!-- TangleKit (optional) -->
+  <link rel="stylesheet" href="js/TangleKit/TangleKit.css" type="text/css">
+  <script type="text/javascript" src="js/TangleKit/mootools.js"></script>
+  <script type="text/javascript" src="js/TangleKit/sprintf.js"></script>
+  <script type="text/javascript" src="js/TangleKit/BVTouchable.js"></script>
+  <script type="text/javascript" src="js/TangleKit/TangleKit.js"></script>
+    
+#+end_src
+
+#+name: Tangle-Code
+#+begin_src javascript
+  <script type="text/javascript">
+      var tangle = null;
+  
+      var model = {
+          initialize : function() {
+              this.startR = testEmitter.startColor.r;
+              this.startG = testEmitter.startColor.g;
+              this.startB = testEmitter.startColor.b;
+              this.startA = testEmitter.startColor.a;
+  
+              this.endR = testEmitter.endColor.r;
+              this.endG = testEmitter.endColor.g;
+              this.endB = testEmitter.endColor.b;
+              this.endA = testEmitter.endColor.a;
+  
+              this.startEnergy = testEmitter.startEnergy;
+              this.cooldown = testEmitter.cooldown;
+              this.particlesPerFrame = testEmitter.particlesPerFrame;
+              
+              this.startSize = testEmitter.startSize;
+              this.endSize = testEmitter.endSize;
+  
+              this.startX = testEmitter.pos.x;
+              this.startY = testEmitter.pos.y;
+              this.startZ = testEmitter.pos.z;
+          },
+  
+          update : function() {
+              testEmitter.startColor.r = this.startR;
+              testEmitter.startColor.g = this.startG;
+              testEmitter.startColor.b = this.startB;
+              testEmitter.startColor.a = this.startA;
+  
+              testEmitter.endColor.r = this.endR;
+              testEmitter.endColor.g = this.endG;
+              testEmitter.endColor.b = this.endB;
+              testEmitter.endColor.a = this.endA;
+  
+  
+              testEmitter.startEnergy = this.startEnergy;
+              testEmitter.cooldown = this.cooldown;
+              testEmitter.particlesPerFrame = this.particlesPerFrame;
+              
+              testEmitter.startSize = this.startSize;
+              testEmitter.endSize = this.endSize;
+  
+              testEmitter.pos.x = this.startX;
+              testEmitter.pos.y = this.startY;
+              testEmitter.pos.z = this.startZ;
+  
+          }
+      };
+  
+  function startTangle() {
+      tangle = new Tangle(document.getElementById("control-panel"), model);
+  }
+  </script>
+#+end_src
+
+#+name: Tangle-Panel
+#+begin_src html
+  <p id="control-panel">Pojedyncza cząsteczka startuje z kolorem: {
+  r : <span class="TKAdjustableNumber" data-var="startR"></span>, g :
+  <span class="TKAdjustableNumber" data-var="startG"></span>, b :
+  <span class="TKAdjustableNumber" data-var="startB"></span>, a :
+  <span class="TKAdjustableNumber" data-var="startA"></span> } i po
+  <span class="TKAdjustableNumber" data-var="startEnergy"></span>
+  sekundach kończy z z kolorem: { r : <span class="TKAdjustableNumber"
+  data-var="endR"></span>, g : <span class="TKAdjustableNumber"
+  data-var="endG"></span>, b : <span class="TKAdjustableNumber"
+  data-var="endB"></span>, a : <span class="TKAdjustableNumber"
+  data-var="endA"></span> }. Cząsteczki emitowane są co <span
+  class="TKAdjustableNumber" data-var="cooldown"></span> sekund(y) po
+  <span class="TKAdjustableNumber"
+  data-var="particlesPerFrame"></span> na raz. Zmieniają też swój
+  rozmiar od <span class="TKAdjustableNumber"
+  data-var="startSize"></span> na początku do <span
+  class="TKAdjustableNumber" data-var="endSize"></span> na
+  końcu. Emiter znajduje się w punkcie: [<span
+  class="TKAdjustableNumber" data-var="startX"></span>, <span
+  class="TKAdjustableNumber" data-var="startY"></span>, <span
+  class="TKAdjustableNumber" data-var="startZ"></span>].</p>
+#+end_src
+
 ** Advanced Emitter - Jet Demo
 
 #+name: Example - advanced emitter jet demo
@@ -957,7 +1121,7 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
   <html>
     <head>
       <title>Zaawansowany emiter cząstek - symulacja odrzutu</title>
-      <<JSIncludes>>
+      <<JSIncludes-Tangle>>
       <<FragmentShader>>
       <<VertexShader>>
 
@@ -965,6 +1129,8 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
     </head>
     <body onload="webGLStart();">
       <<Canvas>>
+      <<Tangle-Code>>
+      <<Tangle-Panel>>
     </body>
   </html>
   
@@ -1017,6 +1183,8 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
       testEmitter.getParticleStartVelocity = function () {
           return vec3.create([-2, Math.random() - 0.5, 0]);
       };
+
+      startTangle();
   }
   
 #+end_src
@@ -1029,14 +1197,16 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
   <html>
     <head>
       <title>Zaawansowany emiter cząstek - symulacja dymu</title>
-      <<JSIncludes>>
+      <<JSIncludes-Tangle>>
       <<FragmentShader>>
       <<VertexShader>>
-
+  
       <<WebGL-Advanced-Emitter-Smoke>>
     </head>
     <body onload="webGLStart();">
       <<Canvas>>
+      <<Tangle-Code>>
+      <<Tangle-Panel>>
     </body>
   </html>
   
@@ -1101,7 +1271,7 @@ testEmitter.getParticleStartVelocity = function() { return vec3.create([1, Math.
   <html>
     <head>
       <title>Zaawansowany emiter cząstek - symulacje fizyczne</title>
-      <<JSIncludes>>
+      <<JSIncludes-Tangle>>
       <<FragmentShader>>
       <<VertexShader>>
 
@@ -1109,6 +1279,8 @@ testEmitter.getParticleStartVelocity = function() { return vec3.create([1, Math.
     </head>
     <body onload="webGLStart();">
       <<Canvas>>
+      <<Tangle-Code>>
+      <<Tangle-Panel>>
     </body>
   </html>
   
@@ -1180,13 +1352,14 @@ testEmitter.getParticleStartVelocity = function() { return vec3.create([1, Math.
 #+end_src
 
 
-* /b/
+* Dodatkowe materiały
+  Warto sprawdzić poniższe linki za dodatkowymi materiałami n/t systemów cząsteczkowych.
+  - http://nehe.gamedev.net/tutorial/particle_engine_using_triangle_strips/21001/
+  - http://webgl-tuts.webninja.eu/#tutorials-tutorial9
+  - http://learningwebgl.com/blog/?p=1008
 
-** Links to use in the tutorial
-*** http://nehe.gamedev.net/tutorial/particle_engine_using_triangle_strips/21001/
-*** http://webgl-tuts.webninja.eu/#tutorials-tutorial10- (!!??!)
-*** http://learningwebgl.com/blog/?p=1008
-** Unassigned code
+
+* Unassigned code
 #+name: JSIncludes
 #+begin_src html
   <script type="text/javascript" src="js/gl-matrix-min.js"></script>

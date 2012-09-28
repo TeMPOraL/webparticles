@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="title" content="Systemy cząsteczkowe w WebGL - tutorial"/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2012-09-27 18:24:23 Środkowoeuropejski czas letni"/>
+<meta name="generated" content="2012-09-28 10:02:00 Środkowoeuropejski czas letni"/>
 <meta name="author" content=""/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -97,60 +97,75 @@
 </p>
 
 
+
 <div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#sec-1">1 WebGL - szkielet</a></li>
-<li><a href="#sec-2">2 Cząsteczki</a></li>
-<li><a href="#sec-3">3 Emiter</a></li>
-<li><a href="#sec-4">4 Adv. emiter</a></li>
-<li><a href="#sec-5">5 Tangled files</a>
+<li><a href="#sec-1">1 Wstęp</a>
 <ul>
-<li><a href="#sec-5-1">5.1 Skeleton</a>
-<ul>
-<li><a href="#sec-5-1-1">5.1.1 Substructure</a></li>
+<li><a href="#sec-1-1">1.1 WebGL</a></li>
+<li><a href="#sec-1-2">1.2 Systemy cząsteczkowe</a></li>
 </ul>
 </li>
-<li><a href="#sec-5-2">5.2 Simple particle</a>
+<li><a href="#sec-2">2 Przykłady</a></li>
+<li><a href="#sec-3">3 WebGL - szkielet</a></li>
+<li><a href="#sec-4">4 Cząsteczki</a></li>
+<li><a href="#sec-5">5 Emiter</a></li>
+<li><a href="#sec-6">6 Adv. emiter</a></li>
+<li><a href="#sec-7">7 Tangled files</a>
 <ul>
-<li><a href="#sec-5-2-1">5.2.1 Substructure</a></li>
+<li><a href="#sec-7-1">7.1 Skeleton</a>
+<ul>
+<li><a href="#sec-7-1-1">7.1.1 Substructure</a></li>
 </ul>
 </li>
-<li><a href="#sec-5-3">5.3 Simple emitter</a>
+<li><a href="#sec-7-2">7.2 Simple particle</a>
 <ul>
-<li><a href="#sec-5-3-1">5.3.1 Substructure</a></li>
+<li><a href="#sec-7-2-1">7.2.1 Substructure</a></li>
 </ul>
 </li>
-<li><a href="#sec-5-4">5.4 Advanced Emitter</a>
+<li><a href="#sec-7-3">7.3 Simple emitter</a>
 <ul>
-<li><a href="#sec-5-4-1">5.4.1 Substructure</a></li>
+<li><a href="#sec-7-3-1">7.3.1 Substructure</a></li>
+</ul>
+</li>
+<li><a href="#sec-7-4">7.4 Advanced Emitter</a>
+<ul>
+<li><a href="#sec-7-4-1">7.4.1 Substructure</a></li>
+</ul>
+</li>
+<li><a href="#sec-7-5">7.5 Removing unused emitter for adv. demos</a></li>
+<li><a href="#sec-7-6">7.6 Tangle for Adv. demos</a></li>
+<li><a href="#sec-7-7">7.7 Advanced Emitter - Jet Demo</a>
+<ul>
+<li><a href="#sec-7-7-1">7.7.1 Substructure</a></li>
+</ul>
+</li>
+<li><a href="#sec-7-8">7.8 Advanced Emitter - Smoke Demo</a>
+<ul>
+<li><a href="#sec-7-8-1">7.8.1 Substructure</a></li>
+</ul>
+</li>
+<li><a href="#sec-7-9">7.9 Advanced Emitter - Snow Demo</a>
+<ul>
+<li><a href="#sec-7-9-1">7.9.1 Substructure</a></li>
 </ul></li>
 </ul>
 </li>
-<li><a href="#sec-6">6 <i>b</i></a>
+<li><a href="#sec-8">8 Dodatkowe materiały</a></li>
+<li><a href="#sec-9">9 Unassigned code</a></li>
+<li><a href="#sec-10">10 TO DO</a>
 <ul>
-<li><a href="#sec-6-1">6.1 Links to use in the tutorial</a>
+<li><a href="#sec-10-1">10.1 Empty canvas</a></li>
+<li><a href="#sec-10-2">10.2 Particle code + display</a>
 <ul>
-<li><a href="#sec-6-1-1">6.1.1 http://nehe.gamedev.net/tutorial/particle_engine_using_triangle_strips/21001/</a></li>
-<li><a href="#sec-6-1-2">6.1.2 http://webgl-tuts.webninja.eu/#tutorials-tutorial10- (!!??!)</a></li>
-<li><a href="#sec-6-1-3">6.1.3 http://learningwebgl.com/blog/?p=1008</a></li>
+<li><a href="#sec-10-2-1">10.2.1 Press a button/link to change particle color ;).</a></li>
 </ul>
 </li>
-<li><a href="#sec-6-2">6.2 Unassigned code</a></li>
-</ul>
-</li>
-<li><a href="#sec-7">7 TO DO</a>
-<ul>
-<li><a href="#sec-7-1">7.1 Empty canvas</a></li>
-<li><a href="#sec-7-2">7.2 Particle code + display</a>
-<ul>
-<li><a href="#sec-7-2-1">7.2.1 Press a button/link to change particle color ;).</a></li>
-</ul>
-</li>
-<li><a href="#sec-7-3">7.3 Particle emitter code + display</a></li>
-<li><a href="#sec-7-4">7.4 Improved emitter (physics) + display</a></li>
-<li><a href="#sec-7-5">7.5 Bonus</a></li>
+<li><a href="#sec-10-3">10.3 Particle emitter code + display</a></li>
+<li><a href="#sec-10-4">10.4 Improved emitter (physics) + display</a></li>
+<li><a href="#sec-10-5">10.5 Bonus</a></li>
 </ul>
 </li>
 </ul>
@@ -158,17 +173,112 @@
 </div>
 
 <div id="outline-container-1" class="outline-2">
-<h2 id="sec-1"><span class="section-number-2">1</span> WebGL - szkielet</h2>
+<h2 id="sec-1"><span class="section-number-2">1</span> Wstęp</h2>
 <div class="outline-text-2" id="text-1">
 
+<p>  Witaj w tutorialu poświęconemu systemom cząsteczkowym w
+  WebGL'u. Nauczysz się w nich zarówno podstaw tworzenia systemów
+  cząsteczkowych (ang. particle systems), jak i renderowania ich w
+  Internecie za pomocą technologii <a href="http://pl.wikipedia.org/wiki/WebGL">WebGL</a>. Poradnik ten zakłada
+  podstawową wiedzę programistyczną w zakresie języka JavaScript oraz
+  biblioteki OpenGL dla dowolnego języka programowania.
+</p>
+<p>
+  Tutorial ten powstał w ramach przedmiotu "Systemy OpenGL i Direct3D"
+  na studiach II stopnia Informatyki Stosowanej na Akademii
+  Górniczo-Hutniczej w Krakowie.
+</p>
 
+</div>
+
+<div id="outline-container-1-1" class="outline-3">
+<h3 id="sec-1-1"><span class="section-number-3">1.1</span> WebGL</h3>
+<div class="outline-text-3" id="text-1-1">
+
+<p>   WebGL jest rozszerzeniem języka JavaScript dającym dostęp do API
+   dla grafiki 3D w przeglądarce. API to oparte jest na OpenGL ES
+   2.0. WebGL jest silnie związany z HTML5, w szczególności z
+   elementem <code>&lt;canvas&gt;</code>, wewnątrz którego można programowalnie rysować
+   grafikę 2D i 3D.
+</p>
+<p>
+   WebGL jest obecnie wspierany we wszystkich głównych przeglądarkach
+   poza Internet Explorer'em, do którego jednak istnieją nieoficjalne
+   rozszerzenia pozwalające tworzyć grafikę 3D.
+</p>
+<p>
+   Więcej informacji oraz tutoriale i przykłady pracy z WebGL'em
+   znajdziesz w materiałach zawartych na końcu niniejszego poradnika.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-1-2" class="outline-3">
+<h3 id="sec-1-2"><span class="section-number-3">1.2</span> Systemy cząsteczkowe</h3>
+<div class="outline-text-3" id="text-1-2">
+
+
+<p>
+   Systemy cząsteczkowe to popularna metoda tworzenia efektów
+   specjalnych w grafice komputerowej. Polega ona na symulowaniu wielu
+   (dziesiątek, setek, tysięcy, czasem nawet milionów) malutkich
+   cząstek, rysowanych jako punkt lub mały obrazek. Taki rój
+   cząsteczek pozwala realistycznie rysować "rozmyte" zjawiska, takie
+   jak dym, ogień, eksplozje, deszcz, gwiazdy czy galaktyki.
+</p>
+<p>
+   <img src="http://upload.wikimedia.org/wikipedia/commons/2/28/Pi-explosion.jpg"  alt="http://upload.wikimedia.org/wikipedia/commons/2/28/Pi-explosion.jpg" />
+</p>
+<p>
+   Aby móc skutecznie symulować tysiące cząsteczek, każda z nich musi
+   być bardzo prosta. W praktyce, w grafice 3D, cząsteczki zwykle
+   rysowane są jako oteksturowane, kolorowe kwadraty stale zwrócone w
+   stronę ekranu (<a href="http://pl.wikipedia.org/wiki/Billboard_(grafika_komputerowa)">Billboarding</a>). Cała złożoność kształtu cząsteczki
+   tkwi w teksturze, a złożoność zachowania w algorytmie opisującym
+   poruszanie się cząsteczek.
+</p>
+<p>
+   W niniejszym tutorialu omówimy dokładnie budowę rozszerzalnych
+   systemów cząsteczkowych, które mogą zostać wykorzystane w praktyce
+   do gier i aplikacji 3D uruchamianych w przeglądarce.
+</p>
+
+</div>
 </div>
 
 </div>
 
 <div id="outline-container-2" class="outline-2">
-<h2 id="sec-2"><span class="section-number-2">2</span> Cząsteczki</h2>
+<h2 id="sec-2"><span class="section-number-2">2</span> Przykłady</h2>
 <div class="outline-text-2" id="text-2">
+
+<p>  Tymczasowa lista linków do przykładów.
+  <a href="https://dl.dropbox.com/u/216352/stosowana/OpenGL/skeleton.html">https://dl.dropbox.com/u/216352/stosowana/OpenGL/skeleton.html</a>
+  <a href="https://dl.dropbox.com/u/216352/stosowana/OpenGL/simple-particle.html">https://dl.dropbox.com/u/216352/stosowana/OpenGL/simple-particle.html</a>
+  <a href="https://dl.dropbox.com/u/216352/stosowana/OpenGL/simple-emitter.html">https://dl.dropbox.com/u/216352/stosowana/OpenGL/simple-emitter.html</a>
+  <a href="https://dl.dropbox.com/u/216352/stosowana/OpenGL/advanced-emitter.html">https://dl.dropbox.com/u/216352/stosowana/OpenGL/advanced-emitter.html</a>
+  <a href="https://dl.dropbox.com/u/216352/stosowana/OpenGL/advanced-emitter-jet-demo.html">https://dl.dropbox.com/u/216352/stosowana/OpenGL/advanced-emitter-jet-demo.html</a>
+  <a href="https://dl.dropbox.com/u/216352/stosowana/OpenGL/advanced-emitter-smoke-demo.html">https://dl.dropbox.com/u/216352/stosowana/OpenGL/advanced-emitter-smoke-demo.html</a>
+  <a href="https://dl.dropbox.com/u/216352/stosowana/OpenGL/advanced-emitter-snow-demo.html">https://dl.dropbox.com/u/216352/stosowana/OpenGL/advanced-emitter-snow-demo.html</a>
+</p>
+
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> WebGL - szkielet</h2>
+<div class="outline-text-2" id="text-3">
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Cząsteczki</h2>
+<div class="outline-text-2" id="text-4">
 
 
 
@@ -265,9 +375,9 @@ Blablabla, opis shaderów.
 
 </div>
 
-<div id="outline-container-3" class="outline-2">
-<h2 id="sec-3"><span class="section-number-2">3</span> Emiter</h2>
-<div class="outline-text-2" id="text-3">
+<div id="outline-container-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Emiter</h2>
+<div class="outline-text-2" id="text-5">
 
 
 
@@ -418,9 +528,9 @@ function CloneColor(color) {
 
 </div>
 
-<div id="outline-container-4" class="outline-2">
-<h2 id="sec-4"><span class="section-number-2">4</span> Adv. emiter</h2>
-<div class="outline-text-2" id="text-4">
+<div id="outline-container-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> Adv. emiter</h2>
+<div class="outline-text-2" id="text-6">
 
 
 
@@ -491,6 +601,8 @@ FIXME move this somewhere else
 
     this.texture = null;
 
+    this.useAdditiveBlending = true;
+
     //user-configurable particle initialization
     this.getParticlesPerFrame = function() {
         return this.particlesPerFrame;
@@ -547,7 +659,7 @@ FIXME move this somewhere else
     }
 
     this.computeParticleRotation = function(particle) {
-        return 0.0;
+        return particle.startRotation;
     }
 
     //algorithms
@@ -599,6 +711,13 @@ FIXME move this somewhere else
     };
 
     this.draw = function() {
+        if(this.useAdditiveBlending) {
+            gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+        }
+        else {
+            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        }
+
         var i;
         for(i = 0 ; i &lt; this.liveParticles ; ++i) {
             this.drawParticle(this.particles[i]);
@@ -658,6 +777,7 @@ FIXME move this somewhere else
 
 }
 
+
 </pre>
 
 
@@ -665,16 +785,16 @@ FIXME move this somewhere else
 
 </div>
 
-<div id="outline-container-5" class="outline-2">
-<h2 id="sec-5"><span class="section-number-2">5</span> Tangled files</h2>
-<div class="outline-text-2" id="text-5">
+<div id="outline-container-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> Tangled files</h2>
+<div class="outline-text-2" id="text-7">
 
 
 </div>
 
-<div id="outline-container-5-1" class="outline-3">
-<h3 id="sec-5-1"><span class="section-number-3">5.1</span> Skeleton</h3>
-<div class="outline-text-3" id="text-5-1">
+<div id="outline-container-7-1" class="outline-3">
+<h3 id="sec-7-1"><span class="section-number-3">7.1</span> Skeleton</h3>
+<div class="outline-text-3" id="text-7-1">
 
 
 
@@ -694,9 +814,9 @@ FIXME move this somewhere else
 
 </div>
 
-<div id="outline-container-5-1-1" class="outline-4">
-<h4 id="sec-5-1-1"><span class="section-number-4">5.1.1</span> Substructure</h4>
-<div class="outline-text-4" id="text-5-1-1">
+<div id="outline-container-7-1-1" class="outline-4">
+<h4 id="sec-7-1-1"><span class="section-number-4">7.1.1</span> Substructure</h4>
+<div class="outline-text-4" id="text-7-1-1">
 
 
 
@@ -758,9 +878,9 @@ function drawScene() {
 
 </div>
 
-<div id="outline-container-5-2" class="outline-3">
-<h3 id="sec-5-2"><span class="section-number-3">5.2</span> Simple particle</h3>
-<div class="outline-text-3" id="text-5-2">
+<div id="outline-container-7-2" class="outline-3">
+<h3 id="sec-7-2"><span class="section-number-3">7.2</span> Simple particle</h3>
+<div class="outline-text-3" id="text-7-2">
 
 
 
@@ -785,9 +905,9 @@ function drawScene() {
 
 </div>
 
-<div id="outline-container-5-2-1" class="outline-4">
-<h4 id="sec-5-2-1"><span class="section-number-4">5.2.1</span> Substructure</h4>
-<div class="outline-text-4" id="text-5-2-1">
+<div id="outline-container-7-2-1" class="outline-4">
+<h4 id="sec-7-2-1"><span class="section-number-4">7.2.1</span> Substructure</h4>
+<div class="outline-text-4" id="text-7-2-1">
 
 
 
@@ -894,9 +1014,9 @@ function initTexture() {
 
 </div>
 
-<div id="outline-container-5-3" class="outline-3">
-<h3 id="sec-5-3"><span class="section-number-3">5.3</span> Simple emitter</h3>
-<div class="outline-text-3" id="text-5-3">
+<div id="outline-container-7-3" class="outline-3">
+<h3 id="sec-7-3"><span class="section-number-3">7.3</span> Simple emitter</h3>
+<div class="outline-text-3" id="text-7-3">
 
 
 
@@ -922,9 +1042,9 @@ function initTexture() {
 
 </div>
 
-<div id="outline-container-5-3-1" class="outline-4">
-<h4 id="sec-5-3-1"><span class="section-number-4">5.3.1</span> Substructure</h4>
-<div class="outline-text-4" id="text-5-3-1">
+<div id="outline-container-7-3-1" class="outline-4">
+<h4 id="sec-7-3-1"><span class="section-number-4">7.3.1</span> Substructure</h4>
+<div class="outline-text-4" id="text-7-3-1">
 
 
 
@@ -1051,9 +1171,9 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
 
 </div>
 
-<div id="outline-container-5-4" class="outline-3">
-<h3 id="sec-5-4"><span class="section-number-3">5.4</span> Advanced Emitter</h3>
-<div class="outline-text-3" id="text-5-4">
+<div id="outline-container-7-4" class="outline-3">
+<h3 id="sec-7-4"><span class="section-number-3">7.4</span> Advanced Emitter</h3>
+<div class="outline-text-3" id="text-7-4">
 
 
 
@@ -1080,9 +1200,9 @@ To wszystko idzie do przerycia; stanie się elementem emitera.
 
 </div>
 
-<div id="outline-container-5-4-1" class="outline-4">
-<h4 id="sec-5-4-1"><span class="section-number-4">5.4.1</span> Substructure</h4>
-<div class="outline-text-4" id="text-5-4-1">
+<div id="outline-container-7-4-1" class="outline-4">
+<h4 id="sec-7-4-1"><span class="section-number-4">7.4.1</span> Substructure</h4>
+<div class="outline-text-4" id="text-7-4-1">
 
 
 
@@ -1182,6 +1302,448 @@ function drawScene() {
 </pre>
 
 
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-7-5" class="outline-3">
+<h3 id="sec-7-5"><span class="section-number-3">7.5</span> Removing unused emitter for adv. demos</h3>
+<div class="outline-text-3" id="text-7-5">
+
+
+
+
+
+<pre class="example">
+function drawScene() {
+    gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    gl.enable(gl.BLEND);
+
+    mat4.identity(mvMatrix);
+    //tu kod rysujacy
+
+    testEmitter.draw();
+ }
+
+</pre>
+
+
+
+<pre class="example">function UpdateWorld(dt) {
+    testEmitter.update(dt);
+}
+</pre>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-7-6" class="outline-3">
+<h3 id="sec-7-6"><span class="section-number-3">7.6</span> Tangle for Adv. demos</h3>
+<div class="outline-text-3" id="text-7-6">
+
+
+
+
+<pre class="example">&lt;&lt;JSIncludes&gt;&gt;
+
+&lt;!-- Tangle --&gt;
+&lt;script type="text/javascript" src="js/Tangle.js"&gt;&lt;/script&gt;
+
+&lt;!-- TangleKit (optional) --&gt;
+&lt;link rel="stylesheet" href="js/TangleKit/TangleKit.css" type="text/css"&gt;
+&lt;script type="text/javascript" src="js/TangleKit/mootools.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="js/TangleKit/sprintf.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="js/TangleKit/BVTouchable.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="js/TangleKit/TangleKit.js"&gt;&lt;/script&gt;
+
+</pre>
+
+
+
+<pre class="example">&lt;script type="text/javascript"&gt;
+    var tangle = null;
+
+    var model = {
+        initialize : function() {
+            this.startR = testEmitter.startColor.r;
+            this.startG = testEmitter.startColor.g;
+            this.startB = testEmitter.startColor.b;
+            this.startA = testEmitter.startColor.a;
+
+            this.endR = testEmitter.endColor.r;
+            this.endG = testEmitter.endColor.g;
+            this.endB = testEmitter.endColor.b;
+            this.endA = testEmitter.endColor.a;
+
+            this.startEnergy = testEmitter.startEnergy;
+            this.cooldown = testEmitter.cooldown;
+            this.particlesPerFrame = testEmitter.particlesPerFrame;
+
+            this.startSize = testEmitter.startSize;
+            this.endSize = testEmitter.endSize;
+
+            this.startX = testEmitter.pos.x;
+            this.startY = testEmitter.pos.y;
+            this.startZ = testEmitter.pos.z;
+        },
+
+        update : function() {
+            testEmitter.startColor.r = this.startR;
+            testEmitter.startColor.g = this.startG;
+            testEmitter.startColor.b = this.startB;
+            testEmitter.startColor.a = this.startA;
+
+            testEmitter.endColor.r = this.endR;
+            testEmitter.endColor.g = this.endG;
+            testEmitter.endColor.b = this.endB;
+            testEmitter.endColor.a = this.endA;
+
+
+            testEmitter.startEnergy = this.startEnergy;
+            testEmitter.cooldown = this.cooldown;
+            testEmitter.particlesPerFrame = this.particlesPerFrame;
+
+            testEmitter.startSize = this.startSize;
+            testEmitter.endSize = this.endSize;
+
+            testEmitter.pos.x = this.startX;
+            testEmitter.pos.y = this.startY;
+            testEmitter.pos.z = this.startZ;
+
+        }
+    };
+
+function startTangle() {
+    tangle = new Tangle(document.getElementById("control-panel"), model);
+}
+&lt;/script&gt;
+</pre>
+
+
+
+<pre class="example">&lt;p id="control-panel"&gt;Pojedyncza cząsteczka startuje z kolorem: {
+r : &lt;span class="TKAdjustableNumber" data-var="startR"&gt;&lt;/span&gt;, g :
+&lt;span class="TKAdjustableNumber" data-var="startG"&gt;&lt;/span&gt;, b :
+&lt;span class="TKAdjustableNumber" data-var="startB"&gt;&lt;/span&gt;, a :
+&lt;span class="TKAdjustableNumber" data-var="startA"&gt;&lt;/span&gt; } i po
+&lt;span class="TKAdjustableNumber" data-var="startEnergy"&gt;&lt;/span&gt;
+sekundach kończy z z kolorem: { r : &lt;span class="TKAdjustableNumber"
+data-var="endR"&gt;&lt;/span&gt;, g : &lt;span class="TKAdjustableNumber"
+data-var="endG"&gt;&lt;/span&gt;, b : &lt;span class="TKAdjustableNumber"
+data-var="endB"&gt;&lt;/span&gt;, a : &lt;span class="TKAdjustableNumber"
+data-var="endA"&gt;&lt;/span&gt; }. Cząsteczki emitowane są co &lt;span
+class="TKAdjustableNumber" data-var="cooldown"&gt;&lt;/span&gt; sekund(y) po
+&lt;span class="TKAdjustableNumber"
+data-var="particlesPerFrame"&gt;&lt;/span&gt; na raz. Zmieniają też swój
+rozmiar od &lt;span class="TKAdjustableNumber"
+data-var="startSize"&gt;&lt;/span&gt; na początku do &lt;span
+class="TKAdjustableNumber" data-var="endSize"&gt;&lt;/span&gt; na
+końcu. Emiter znajduje się w punkcie: [&lt;span
+class="TKAdjustableNumber" data-var="startX"&gt;&lt;/span&gt;, &lt;span
+class="TKAdjustableNumber" data-var="startY"&gt;&lt;/span&gt;, &lt;span
+class="TKAdjustableNumber" data-var="startZ"&gt;&lt;/span&gt;].&lt;/p&gt;
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-7-7" class="outline-3">
+<h3 id="sec-7-7"><span class="section-number-3">7.7</span> Advanced Emitter - Jet Demo</h3>
+<div class="outline-text-3" id="text-7-7">
+
+
+
+
+
+<pre class="example">&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Zaawansowany emiter cząstek - symulacja odrzutu&lt;/title&gt;
+    &lt;&lt;JSIncludes-Tangle&gt;&gt;
+    &lt;&lt;FragmentShader&gt;&gt;
+    &lt;&lt;VertexShader&gt;&gt;
+
+    &lt;&lt;WebGL-Advanced-Emitter-Jet&gt;&gt;
+  &lt;/head&gt;
+  &lt;body onload="webGLStart();"&gt;
+    &lt;&lt;Canvas&gt;&gt;
+    &lt;&lt;Tangle-Code&gt;&gt;
+    &lt;&lt;Tangle-Panel&gt;&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+
+</pre>
+
+
+
+</div>
+
+<div id="outline-container-7-7-1" class="outline-4">
+<h4 id="sec-7-7-1"><span class="section-number-4">7.7.1</span> Substructure</h4>
+<div class="outline-text-4" id="text-7-7-1">
+
+
+
+
+
+<pre class="example">&lt;script type="text/javascript"&gt;
+  &lt;&lt;WebGL-Matrix-Code&gt;&gt;
+  &lt;&lt;WebGL-Canvas-Init&gt;&gt;
+  &lt;&lt;WebGL-Shaders-Init&gt;&gt;
+  &lt;&lt;WebGL-Buffers-Init&gt;&gt;
+  &lt;&lt;WebGL-Textures-Load&gt;&gt;
+  &lt;&lt;WebGL-Texture-Init-Advanced-Emitter&gt;&gt;
+
+  &lt;&lt;ColorUtils&gt;&gt;
+
+  &lt;&lt;AdvancedParticleObject&gt;&gt;
+
+  //FIXME!
+  &lt;&lt;Utils&gt;&gt;
+  &lt;&lt;AdvancedEmitterObject&gt;&gt;
+
+  &lt;&lt;WebGL-World-Init-Advanced-Emitter-Jet&gt;&gt;
+  &lt;&lt;WebGL-Init-Advanced-Emitter&gt;&gt;
+  &lt;&lt;Update-World-Advanced-Emitter-Demos&gt;&gt;
+  &lt;&lt;WebGL-DrawScene-Advanced-Emitter-Demos&gt;&gt;
+  &lt;&lt;WebGL-Animate-VariableStep&gt;&gt;
+  &lt;&lt;WebGL-Tick-Advanced-Emitter&gt;&gt;
+&lt;/script&gt;
+</pre>
+
+
+
+<pre class="example">var testEmitter;
+
+function initWorld() {
+    testEmitter = new Emitter();
+    testEmitter.pos = vec3.create([1, 1, -8]);
+    testEmitter.startSize = 0.25;
+    testEmitter.endSize = 0.05;
+    testEmitter.setTexture("data/smoke.jpg");
+    testEmitter.startColor = { r : 1, g : 69/255, b : 0.27, a : 0.5};
+    testEmitter.endColor = { r : 0.7, g : 0.7, b : 0.7, a : 0.7};
+    testEmitter.particlesPerFrame = 2;
+    testEmitter.cooldown = 0.01;
+
+    testEmitter.getParticleStartVelocity = function () {
+        return vec3.create([-2, Math.random() - 0.5, 0]);
+    };
+
+    startTangle();
+}
+
+</pre>
+
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-7-8" class="outline-3">
+<h3 id="sec-7-8"><span class="section-number-3">7.8</span> Advanced Emitter - Smoke Demo</h3>
+<div class="outline-text-3" id="text-7-8">
+
+
+
+
+
+<pre class="example">&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Zaawansowany emiter cząstek - symulacja dymu&lt;/title&gt;
+    &lt;&lt;JSIncludes-Tangle&gt;&gt;
+    &lt;&lt;FragmentShader&gt;&gt;
+    &lt;&lt;VertexShader&gt;&gt;
+
+    &lt;&lt;WebGL-Advanced-Emitter-Smoke&gt;&gt;
+  &lt;/head&gt;
+  &lt;body onload="webGLStart();"&gt;
+    &lt;&lt;Canvas&gt;&gt;
+    &lt;&lt;Tangle-Code&gt;&gt;
+    &lt;&lt;Tangle-Panel&gt;&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+
+</pre>
+
+
+
+</div>
+
+<div id="outline-container-7-8-1" class="outline-4">
+<h4 id="sec-7-8-1"><span class="section-number-4">7.8.1</span> Substructure</h4>
+<div class="outline-text-4" id="text-7-8-1">
+
+
+
+
+
+<pre class="example">&lt;script type="text/javascript"&gt;
+  &lt;&lt;WebGL-Matrix-Code&gt;&gt;
+  &lt;&lt;WebGL-Canvas-Init&gt;&gt;
+  &lt;&lt;WebGL-Shaders-Init&gt;&gt;
+  &lt;&lt;WebGL-Buffers-Init&gt;&gt;
+  &lt;&lt;WebGL-Textures-Load&gt;&gt;
+  &lt;&lt;WebGL-Texture-Init-Advanced-Emitter&gt;&gt;
+
+  &lt;&lt;ColorUtils&gt;&gt;
+
+  &lt;&lt;AdvancedParticleObject&gt;&gt;
+
+  //FIXME!
+  &lt;&lt;Utils&gt;&gt;
+  &lt;&lt;AdvancedEmitterObject&gt;&gt;
+
+  &lt;&lt;WebGL-World-Init-Advanced-Emitter-Smoke&gt;&gt;
+  &lt;&lt;WebGL-Init-Advanced-Emitter&gt;&gt;
+  &lt;&lt;Update-World-Advanced-Emitter-Demos&gt;&gt;
+  &lt;&lt;WebGL-DrawScene-Advanced-Emitter-Demos&gt;&gt;
+  &lt;&lt;WebGL-Animate-VariableStep&gt;&gt;
+  &lt;&lt;WebGL-Tick-Advanced-Emitter&gt;&gt;
+&lt;/script&gt;
+</pre>
+
+
+
+<pre class="example">  var testEmitter;
+
+  function initWorld() {
+      testEmitter = new Emitter();
+      testEmitter.pos = vec3.create([-1, -1, -8]);
+      testEmitter.startSize = 0.1;
+      testEmitter.endSize = 1;
+      testEmitter.setTexture("data/smoke.jpg");
+      testEmitter.startColor = { r : 0.2, g : 0.2, b : 0.2, a : 1 };
+      testEmitter.endColor = { r : 0.0, g : 0.0, b : 0.0, a : 0.5 };
+
+      testEmitter.cooldown = 0.03;
+      testEmitter.particlesPerFrame = 1;
+
+
+testEmitter.getParticleStartVelocity = function() { return vec3.create([1, Math.random()/2, 0]); };
+      testEmitter.getParticleStartEnergy = function () { return this.startEnergy + Math.random(); };    
+    }
+
+</pre>
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-7-9" class="outline-3">
+<h3 id="sec-7-9"><span class="section-number-3">7.9</span> Advanced Emitter - Snow Demo</h3>
+<div class="outline-text-3" id="text-7-9">
+
+
+
+
+
+<pre class="example">&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Zaawansowany emiter cząstek - symulacje fizyczne&lt;/title&gt;
+    &lt;&lt;JSIncludes-Tangle&gt;&gt;
+    &lt;&lt;FragmentShader&gt;&gt;
+    &lt;&lt;VertexShader&gt;&gt;
+
+    &lt;&lt;WebGL-Advanced-Emitter-Snow&gt;&gt;
+  &lt;/head&gt;
+  &lt;body onload="webGLStart();"&gt;
+    &lt;&lt;Canvas&gt;&gt;
+    &lt;&lt;Tangle-Code&gt;&gt;
+    &lt;&lt;Tangle-Panel&gt;&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+
+</pre>
+
+
+
+</div>
+
+<div id="outline-container-7-9-1" class="outline-4">
+<h4 id="sec-7-9-1"><span class="section-number-4">7.9.1</span> Substructure</h4>
+<div class="outline-text-4" id="text-7-9-1">
+
+
+
+
+
+<pre class="example">&lt;script type="text/javascript"&gt;
+  &lt;&lt;WebGL-Matrix-Code&gt;&gt;
+  &lt;&lt;WebGL-Canvas-Init&gt;&gt;
+  &lt;&lt;WebGL-Shaders-Init&gt;&gt;
+  &lt;&lt;WebGL-Buffers-Init&gt;&gt;
+  &lt;&lt;WebGL-Textures-Load&gt;&gt;
+  &lt;&lt;WebGL-Texture-Init-Advanced-Emitter&gt;&gt;
+
+  &lt;&lt;ColorUtils&gt;&gt;
+
+  &lt;&lt;AdvancedParticleObject&gt;&gt;
+
+  //FIXME!
+  &lt;&lt;Utils&gt;&gt;
+  &lt;&lt;AdvancedEmitterObject&gt;&gt;
+
+  &lt;&lt;WebGL-World-Init-Advanced-Emitter-Snow&gt;&gt;
+  &lt;&lt;WebGL-Init-Advanced-Emitter&gt;&gt;
+  &lt;&lt;Update-World-Advanced-Emitter-Demos&gt;&gt;
+  &lt;&lt;WebGL-DrawScene-Advanced-Emitter-Demos&gt;&gt;
+  &lt;&lt;WebGL-Animate-VariableStep&gt;&gt;
+  &lt;&lt;WebGL-Tick-Advanced-Emitter&gt;&gt;
+&lt;/script&gt;
+</pre>
+
+
+
+<pre class="example">var testEmitter;
+var testEmitter2;
+
+function randomizeWindDirection() {
+    (function(val) {
+        testEmitter.computeForces = function(particle) {
+            return vec3.create([val, 0, 0])
+        };
+        setTimeout(randomizeWindDirection, 1500);
+    })((Math.random() - 0.5)/2);
+}
+
+function initWorld() {
+    testEmitter = new Emitter();
+    testEmitter.pos = vec3.create([0, 4, -8]);
+    testEmitter.startSize = 0.5;
+    testEmitter.endSize = 0.5;
+    testEmitter.setTexture("data/snowflake.png");
+    testEmitter.startColor = { r : 1, g : 1, b : 1, a : 1};
+    testEmitter.endColor = { r : 1, g : 1, b : 1, a : 1};
+
+    testEmitter.cooldown = 0.3;
+    testEmitter.particlesPerFrame = 2;
+    testEmitter.startEnergy = 30;
+
+    testEmitter.getParticleStartVelocity = function() { return vec3.create([Math.random()/2 - 0.25, -1, 0]); };
+    testEmitter.getParticleStartRotation = function() { return Math.random() * 360; };
+
+    testEmitter.getParticleStartPosition = function() { return vec3.create([this.pos[0]  + (Math.random() * 10 - 5), this.pos[1], this.pos[2]]); };
+
+    randomizeWindDirection();
+}
+</pre>
+
+
 
 </div>
 </div>
@@ -1189,49 +1751,29 @@ function drawScene() {
 
 </div>
 
-<div id="outline-container-6" class="outline-2">
-<h2 id="sec-6"><span class="section-number-2">6</span> <i>b</i></h2>
-<div class="outline-text-2" id="text-6">
+<div id="outline-container-8" class="outline-2">
+<h2 id="sec-8"><span class="section-number-2">8</span> Dodatkowe materiały</h2>
+<div class="outline-text-2" id="text-8">
+
+<p>  Warto sprawdzić poniższe linki za dodatkowymi materiałami n/t systemów cząsteczkowych.
+</p><ul>
+<li><a href="http://nehe.gamedev.net/tutorial/particle_engine_using_triangle_strips/21001/">http://nehe.gamedev.net/tutorial/particle_engine_using_triangle_strips/21001/</a>
+</li>
+<li><a href="http://webgl-tuts.webninja.eu/#tutorials-tutorial9">http://webgl-tuts.webninja.eu/#tutorials-tutorial9</a>
+</li>
+<li><a href="http://learningwebgl.com/blog/?p=1008">http://learningwebgl.com/blog/?p=1008</a>
+</li>
+</ul>
 
 
 
 </div>
 
-<div id="outline-container-6-1" class="outline-3">
-<h3 id="sec-6-1"><span class="section-number-3">6.1</span> Links to use in the tutorial</h3>
-<div class="outline-text-3" id="text-6-1">
-
-
 </div>
 
-<div id="outline-container-6-1-1" class="outline-4">
-<h4 id="sec-6-1-1"><span class="section-number-4">6.1.1</span> <a href="http://nehe.gamedev.net/tutorial/particle_engine_using_triangle_strips/21001/">http://nehe.gamedev.net/tutorial/particle_engine_using_triangle_strips/21001/</a></h4>
-<div class="outline-text-4" id="text-6-1-1">
-
-</div>
-
-</div>
-
-<div id="outline-container-6-1-2" class="outline-4">
-<h4 id="sec-6-1-2"><span class="section-number-4">6.1.2</span> <a href="http://webgl-tuts.webninja.eu/#tutorials-tutorial10">http://webgl-tuts.webninja.eu/#tutorials-tutorial10</a>- (!!??!)</h4>
-<div class="outline-text-4" id="text-6-1-2">
-
-</div>
-
-</div>
-
-<div id="outline-container-6-1-3" class="outline-4">
-<h4 id="sec-6-1-3"><span class="section-number-4">6.1.3</span> <a href="http://learningwebgl.com/blog/?p=1008">http://learningwebgl.com/blog/?p=1008</a></h4>
-<div class="outline-text-4" id="text-6-1-3">
-
-</div>
-</div>
-
-</div>
-
-<div id="outline-container-6-2" class="outline-3">
-<h3 id="sec-6-2"><span class="section-number-3">6.2</span> Unassigned code</h3>
-<div class="outline-text-3" id="text-6-2">
+<div id="outline-container-9" class="outline-2">
+<h2 id="sec-9"><span class="section-number-2">9</span> Unassigned code</h2>
+<div class="outline-text-2" id="text-9">
 
 
 
@@ -1435,44 +1977,43 @@ function animate() {
 
 
 </div>
-</div>
 
 </div>
 
-<div id="outline-container-7" class="outline-2">
-<h2 id="sec-7"><span class="section-number-2">7</span> TO DO</h2>
-<div class="outline-text-2" id="text-7">
-
-
-</div>
-
-<div id="outline-container-7-1" class="outline-3">
-<h3 id="sec-7-1"><span class="section-number-3">7.1</span> <span class="done DONE">DONE</span> Empty canvas</h3>
-<div class="outline-text-3" id="text-7-1">
-
-</div>
-
-</div>
-
-<div id="outline-container-7-2" class="outline-3">
-<h3 id="sec-7-2"><span class="section-number-3">7.2</span> <span class="done DONE">DONE</span> Particle code + display</h3>
-<div class="outline-text-3" id="text-7-2">
+<div id="outline-container-10" class="outline-2">
+<h2 id="sec-10"><span class="section-number-2">10</span> TO DO</h2>
+<div class="outline-text-2" id="text-10">
 
 
 </div>
 
-<div id="outline-container-7-2-1" class="outline-4">
-<h4 id="sec-7-2-1"><span class="section-number-4">7.2.1</span> <span class="todo TODO">TODO</span> Press a button/link to change particle color ;).</h4>
-<div class="outline-text-4" id="text-7-2-1">
+<div id="outline-container-10-1" class="outline-3">
+<h3 id="sec-10-1"><span class="section-number-3">10.1</span> <span class="done DONE">DONE</span> Empty canvas</h3>
+<div class="outline-text-3" id="text-10-1">
+
+</div>
+
+</div>
+
+<div id="outline-container-10-2" class="outline-3">
+<h3 id="sec-10-2"><span class="section-number-3">10.2</span> <span class="done DONE">DONE</span> Particle code + display</h3>
+<div class="outline-text-3" id="text-10-2">
+
+
+</div>
+
+<div id="outline-container-10-2-1" class="outline-4">
+<h4 id="sec-10-2-1"><span class="section-number-4">10.2.1</span> <span class="todo TODO">TODO</span> Press a button/link to change particle color ;).</h4>
+<div class="outline-text-4" id="text-10-2-1">
 
 </div>
 </div>
 
 </div>
 
-<div id="outline-container-7-3" class="outline-3">
-<h3 id="sec-7-3"><span class="section-number-3">7.3</span> <span class="done DONE">DONE</span> Particle emitter code + display</h3>
-<div class="outline-text-3" id="text-7-3">
+<div id="outline-container-10-3" class="outline-3">
+<h3 id="sec-10-3"><span class="section-number-3">10.3</span> <span class="done DONE">DONE</span> Particle emitter code + display</h3>
+<div class="outline-text-3" id="text-10-3">
 
 <ul>
 <li>demo a simple (magic) explosion
@@ -1483,16 +2024,41 @@ function animate() {
 
 </div>
 
-<div id="outline-container-7-4" class="outline-3">
-<h3 id="sec-7-4"><span class="section-number-3">7.4</span> <span class="todo TODO">TODO</span> Improved emitter (physics) + display</h3>
-<div class="outline-text-3" id="text-7-4">
+<div id="outline-container-10-4" class="outline-3">
+<h3 id="sec-10-4"><span class="section-number-3">10.4</span> <span class="todo TODO">TODO</span> Improved emitter (physics) + display</h3>
+<div class="outline-text-3" id="text-10-4">
 
 <ul>
-<li>demo snowe
+<li>demo snow
+<ul>
+<li>randomizowana pozycja startowa
+</li>
+<li>siły wiatru + grawitacja, wiatr się zmienia co losowy czas
+</li>
+<li>kolor stały
+</li>
+</ul>
+
 </li>
 <li>demo smoke
+<ul>
+<li>kolor od białego/szarego do czarnego, z przesunięciem środka w lewo
+</li>
+<li>grawitacja + wypór = siła zależna od wysokości ;)
+</li>
+<li>vel startowy mocno w lewo :)
+</li>
+</ul>
+
 </li>
 <li>demo jet
+<ul>
+<li>vel mocno w jakąś stronę
+</li>
+<li>orange-white colors
+</li>
+</ul>
+
 </li>
 </ul>
 
@@ -1500,9 +2066,9 @@ function animate() {
 
 </div>
 
-<div id="outline-container-7-5" class="outline-3">
-<h3 id="sec-7-5"><span class="section-number-3">7.5</span> <span class="todo TODO">TODO</span> Bonus</h3>
-<div class="outline-text-3" id="text-7-5">
+<div id="outline-container-10-5" class="outline-3">
+<h3 id="sec-10-5"><span class="section-number-3">10.5</span> <span class="todo TODO">TODO</span> Bonus</h3>
+<div class="outline-text-3" id="text-10-5">
 
 <ul>
 <li>particles that follow path
@@ -1517,7 +2083,7 @@ function animate() {
 </div>
 
 <div id="postamble">
-<p class="date">Date: 2012-09-27 18:24:23 Środkowoeuropejski czas letni</p>
+<p class="date">Date: 2012-09-28 10:02:00 Środkowoeuropejski czas letni</p>
 <p class="author">Author: </p>
 <p class="creator">Org version 7.8.11 with Emacs version 24</p>
 <a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>

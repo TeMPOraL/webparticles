@@ -4,6 +4,17 @@
     <title>Zaawansowany emiter cz±stek - symulacja dymu</title>
     <script type="text/javascript" src="js/gl-matrix-min.js"></script>
     <script type="text/javascript" src="js/webgl-utils.js"></script>
+    
+    <!-- Tangle -->
+    <script type="text/javascript" src="js/Tangle.js"></script>
+      
+    <!-- TangleKit (optional) -->
+    <link rel="stylesheet" href="js/TangleKit/TangleKit.css" type="text/css">
+    <script type="text/javascript" src="js/TangleKit/mootools.js"></script>
+    <script type="text/javascript" src="js/TangleKit/sprintf.js"></script>
+    <script type="text/javascript" src="js/TangleKit/BVTouchable.js"></script>
+    <script type="text/javascript" src="js/TangleKit/TangleKit.js"></script>
+      
     <script id="shader-fs" type="x-shader/x-fragment">
         precision mediump float;
      
@@ -499,5 +510,83 @@
   </head>
   <body onload="webGLStart();">
     <canvas id="webgl_canvas" style="border: none;" width="640" height="480"></canvas>
+    <script type="text/javascript">
+        var tangle = null;
+    
+        var model = {
+            initialize : function() {
+                this.startR = testEmitter.startColor.r;
+                this.startG = testEmitter.startColor.g;
+                this.startB = testEmitter.startColor.b;
+                this.startA = testEmitter.startColor.a;
+    
+                this.endR = testEmitter.endColor.r;
+                this.endG = testEmitter.endColor.g;
+                this.endB = testEmitter.endColor.b;
+                this.endA = testEmitter.endColor.a;
+    
+                this.startEnergy = testEmitter.startEnergy;
+                this.cooldown = testEmitter.cooldown;
+                this.particlesPerFrame = testEmitter.particlesPerFrame;
+                
+                this.startSize = testEmitter.startSize;
+                this.endSize = testEmitter.endSize;
+    
+                this.startX = testEmitter.pos.x;
+                this.startY = testEmitter.pos.y;
+                this.startZ = testEmitter.pos.z;
+            },
+    
+            update : function() {
+                testEmitter.startColor.r = this.startR;
+                testEmitter.startColor.g = this.startG;
+                testEmitter.startColor.b = this.startB;
+                testEmitter.startColor.a = this.startA;
+    
+                testEmitter.endColor.r = this.endR;
+                testEmitter.endColor.g = this.endG;
+                testEmitter.endColor.b = this.endB;
+                testEmitter.endColor.a = this.endA;
+    
+    
+                testEmitter.startEnergy = this.startEnergy;
+                testEmitter.cooldown = this.cooldown;
+                testEmitter.particlesPerFrame = this.particlesPerFrame;
+                
+                testEmitter.startSize = this.startSize;
+                testEmitter.endSize = this.endSize;
+    
+                testEmitter.pos.x = this.startX;
+                testEmitter.pos.y = this.startY;
+                testEmitter.pos.z = this.startZ;
+    
+            }
+        };
+    
+    function startTangle() {
+        tangle = new Tangle(document.getElementById("control-panel"), model);
+    }
+    </script>
+    <p id="control-panel">Pojedyncza cz±steczka startuje z kolorem: {
+    r : <span class="TKAdjustableNumber" data-var="startR"></span>, g :
+    <span class="TKAdjustableNumber" data-var="startG"></span>, b :
+    <span class="TKAdjustableNumber" data-var="startB"></span>, a :
+    <span class="TKAdjustableNumber" data-var="startA"></span> } i po
+    <span class="TKAdjustableNumber" data-var="startEnergy"></span>
+    sekundach koñczy z z kolorem: { r : <span class="TKAdjustableNumber"
+    data-var="endR"></span>, g : <span class="TKAdjustableNumber"
+    data-var="endG"></span>, b : <span class="TKAdjustableNumber"
+    data-var="endB"></span>, a : <span class="TKAdjustableNumber"
+    data-var="endA"></span> }. Cz±steczki emitowane s± co <span
+    class="TKAdjustableNumber" data-var="cooldown"></span> sekund(y) po
+    <span class="TKAdjustableNumber"
+    data-var="particlesPerFrame"></span> na raz. Zmieniaj± te¿ swój
+    rozmiar od <span class="TKAdjustableNumber"
+    data-var="startSize"></span> na pocz±tku do <span
+    class="TKAdjustableNumber" data-var="endSize"></span> na
+    koñcu. Emiter znajduje siê w punkcie: [<span
+    class="TKAdjustableNumber" data-var="startX"></span>, <span
+    class="TKAdjustableNumber" data-var="startY"></span>, <span
+    class="TKAdjustableNumber" data-var="startZ"></span>].</p>
   </body>
 </html>
